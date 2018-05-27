@@ -1,5 +1,6 @@
 module.exports = {
   mode: 'spa',
+  dev: process.env.NODE_ENV !== 'production',
   /*
   ** Headers of the page
   */
