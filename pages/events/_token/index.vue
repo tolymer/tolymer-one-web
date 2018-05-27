@@ -1,0 +1,34 @@
+<template>
+  <main>
+    <h1>{{ title }}</h1>
+    <h2>{{ date }}</h2>
+    <div>{{ description }}</div>
+
+    <ul>
+      <li v-for="(member, i) in members" :key="i">{{ member.name }}</li>
+    </ul>
+
+    <hr>
+
+    <nuxt-link :to="`/events/${token}/scores`">Input Scores</nuxt-link>
+  </main>
+</template>
+
+<script>
+import TolymerClient from '../../../lib/TolymerClient';
+
+export default {
+  async asyncData({ params }) {
+    const token = params.token;
+    const event = await TolymerClient.get(`/guest_events/${token}`);
+    const members = await TolymerClient.get(`/guest_events/${token}/guest_members`);
+    return {
+      token: event.token,
+      title: event.title,
+      date: event.date,
+      description: event.description,
+      members: members,
+    };
+  },
+};
+</script>

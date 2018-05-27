@@ -1,64 +1,55 @@
 <template>
-  <section class="container">
+  <main>
+    <h1>Create Event</h1>
+
+    <h2>Title</h2>
+    <input type="text" v-model="title">
+
+    <h2>Description</h2>
+    <input type="text" v-model="description">
+
+    <h3>Date</h3>
+    <input type="date" v-model="date">
+
+    <h3>Members</h3>
+    <textarea rows="5" cols="40" v-model="members" placeholder="hokaccha
+1000ch
+hiloki
+tan_yuki"></textarea>
+
     <div>
-      <app-logo/>
-      <h1 class="title">
-        tolymer-guest-web
-      </h1>
-      <h2 class="subtitle">
-        Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
-      </div>
+      <button @click="submit()">Create</button>
     </div>
-  </section>
+  </main>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import TolymerClient from '../lib/TolymerClient';
 
 export default {
-  components: {
-    AppLogo
-  }
+  data() {
+    return {
+      title: '',
+      description: '',
+      date: '',
+      members: '',
+    };
+  },
+  methods: {
+    async submit() {
+      const event = await TolymerClient.post('/guest_events', {
+        title: this.title,
+        description: this.description,
+        date: this.date,
+      });
+      await TolymerClient.post(`/guest_events/${event.token}/guest_members`, {
+        names: this.members.split('\n'),
+      });
+      this.$router.push(`/events/${event.token}`);
+    },
+  },
 }
 </script>
 
 <style>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
 </style>
