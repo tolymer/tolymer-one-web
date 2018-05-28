@@ -1,6 +1,6 @@
 <template>
   <main>
-    <h1>{{ title }}</h1>
+    <h1><nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link></h1>
     <h2>{{ date }}</h2>
     <div>{{ description }}</div>
 
