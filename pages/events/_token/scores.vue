@@ -21,8 +21,8 @@
         <tbody>
           <tr v-for="(game, i) in games" :key="i">
             <th>{{i + 1}}</th>
-            <td v-for="(score, j) in game.scores" :key="j">
-              {{score}}
+            <td v-for="(member, j) in members" :key="j">
+              {{game.scores.find(s => s.member_id === member.id).point}}
             </td>
             <th><span @click="toEditScore(game)">Edit</span></th>
           </tr>
@@ -74,6 +74,8 @@ import TolymerClient from '../../../lib/TolymerClient';
 export default {
   data() {
     return {
+      token: null,
+      title: '',
       viewMode: "list",
       members: [],
       games: [],
@@ -83,23 +85,28 @@ export default {
   },
   async asyncData({ params }) {
     const token = params.token;
-    const event = await TolymerClient.get(`/guest_events/${token}`);
-    const members = await TolymerClient.get(`/guest_events/${token}/guest_members`);
+    const [event, members, games] = await Promise.all([
+      TolymerClient.get(`/guest_events/${token}`),
+      TolymerClient.get(`/guest_events/${token}/guest_members`),
+      TolymerClient.get(`/guest_events/${token}/guest_games`),
+    ]);
     return {
       token: event.token,
       title: event.title,
-      members: members,
+      members,
+      games,
       inputScores: members.map(() => null),
     };
   },
   methods: {
     calcTotalScores() {
       return this.games.reduce((acc, game) => {
-        game.scores.forEach((score, i) => {
+        this.members.forEach((member, i) => {
+          const score = game.scores.find(s => s.member_id === member.id);
           if (acc[i] == null) {
             acc[i] = 0;
           }
-          acc[i] += score;
+          acc[i] += score.point;
         });
         return acc;
       }, []);
@@ -110,8 +117,11 @@ export default {
     toEditScore(game) {
       this.switchViewTo("form");
       this.updateGame = game;
-      const topScore = Math.max(...game.scores);
-      this.inputScores = game.scores.map(s => (s === topScore ? "top" : s));
+      const topScore = Math.max(...(game.scores.map(s => s.point)));
+      this.inputScores = this.members.map(member => {
+        const score = game.scores.find(s => s.member_id === member.id);
+        return score.point === topScore ? "top" : score.point;
+      });
     },
     switchViewTo(view) {
       this.inputScores = this.members.map(() => null);
@@ -121,14 +131,18 @@ export default {
     async save() {
       if (!this.isValidInput()) return;
 
-      const scores = this.inputScores.map(
-        s => (s === "top" ? this.topScore() : Number(s))
-      );
+      const scores = this.inputScores.map((score, i) => {
+        const point = (score === "top" ? this.topScore() : Number(score));
+        return { member_id: this.members[i].id, point };
+      });
 
       if (this.updateGame) {
-        this.games.find(g => g.id === this.updateGame.id).scores = scores;
+        const game = this.games.find(g => g.id === this.updateGame.id);
+        TolymerClient.patch(`/guest_games/${game.id}`, { scores });
+        game.scores = scores;
       } else {
-        this.games.push({ id: this.games.length + 1, scores });
+        const game = TolymerClient.post(`/guest_events/${this.token}/guest_games`, { scores });
+        this.games.push({ id: game.id, scores });
       }
 
       this.switchViewTo("list");

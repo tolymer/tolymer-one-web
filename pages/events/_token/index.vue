@@ -20,8 +20,10 @@ import TolymerClient from '../../../lib/TolymerClient';
 export default {
   async asyncData({ params }) {
     const token = params.token;
-    const event = await TolymerClient.get(`/guest_events/${token}`);
-    const members = await TolymerClient.get(`/guest_events/${token}/guest_members`);
+    const [event, members] = await Promise.all([
+      TolymerClient.get(`/guest_events/${token}`),
+      TolymerClient.get(`/guest_events/${token}/guest_members`)
+    ]);
     return {
       token: event.token,
       title: event.title,
