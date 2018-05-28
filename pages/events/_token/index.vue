@@ -11,6 +11,8 @@
     <hr>
 
     <nuxt-link :to="`/events/${token}/scores`">Input Scores</nuxt-link>
+    |
+    <nuxt-link :to="`/events/${token}/edit`">Edit</nuxt-link>
   </main>
 </template>
 
