@@ -10,6 +10,9 @@
     <h3>Date</h3>
     <input type="date" v-model="date">
 
+    <h3>Members</h3>
+    <textarea rows="5" cols="40" v-model="members"></textarea>
+
     <p>
       <button @click="submit()">Edit</button>
     </p>
@@ -26,21 +29,26 @@ export default {
       TolymerClient.get(`/guest_events/${token}`),
       TolymerClient.get(`/guest_events/${token}/guest_members`)
     ]);
+    const memberNames = members.map(m => m.name).join('\n');
     return {
       token: event.token,
       title: event.title,
       date: event.date,
       description: event.description,
-      members: members,
+      members: memberNames,
     };
   },
   methods: {
     async submit() {
-      await TolymerClient.patch(`/guest_events/${this.token}`, {
+      const p1 = TolymerClient.patch(`/guest_events/${this.token}`, {
         title: this.title,
         date: this.date,
         description: this.description,
       });
+      const p2 = TolymerClient.post(`/guest_events/${this.token}/guest_members`, {
+        names: this.members.split('\n')
+      });
+      await Promise.all([p1, p2]);
       this.$router.push(`/events/${this.token}`);
     },
   },
