@@ -29,13 +29,12 @@ export default {
       TolymerClient.get(`/guest_events/${token}`),
       TolymerClient.get(`/guest_events/${token}/guest_members`)
     ]);
-    const memberNames = members.map(m => m.name).join('\n');
     return {
       token: event.token,
       title: event.title,
       date: event.date,
       description: event.description,
-      members: memberNames,
+      members: members.map(m => m.name).join('\n'),
     };
   },
   methods: {
