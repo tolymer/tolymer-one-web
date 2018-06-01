@@ -32,7 +32,7 @@ export default {
       title: '',
       description: '',
       date: '',
-      members: '',
+      members: ''
     };
   },
   methods: {
@@ -40,15 +40,15 @@ export default {
       const event = await TolymerClient.post('/guest_events', {
         title: this.title,
         description: this.description,
-        date: this.date,
+        date: this.date
       });
       await TolymerClient.post(`/guest_events/${event.token}/guest_members`, {
-        names: this.members.split('\n'),
+        names: this.members.split('\n')
       });
       this.$router.push(`/events/${event.token}`);
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style>

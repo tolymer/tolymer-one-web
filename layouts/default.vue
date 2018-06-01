@@ -9,7 +9,7 @@ body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #EFEFEF;
+  background-color: #efefef;
 }
 
 .app {
@@ -18,6 +18,6 @@ body {
   padding: 10px;
   min-height: 100vh;
   box-sizing: border-box;
-  background-color: #FFF;
+  background-color: #fff;
 }
 </style>

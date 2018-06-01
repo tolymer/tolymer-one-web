@@ -4,9 +4,8 @@
 
     <div v-if="viewMode === 'list'">
       <div class="nav">
-        <span class="btn" v-on:click="toNewScore()">
-        <span>New</span>
-        </span>
+        <span class="btn new" @click="toNewScore()">New</span>
+        <span class="btn tip" @click="toTip()">Tip</span>
       </div>
       <table class="scoreTable">
         <thead>
@@ -42,6 +41,7 @@
       <div class="nav">
         <span @click="cancel()">❌</span>
       </div>
+      <h2 v-if="isInputTip">Tip</h2>
       <table class="formTable">
         <thead>
           <th>Name</th>
@@ -76,26 +76,27 @@ export default {
     return {
       token: null,
       title: '',
-      viewMode: "list",
+      viewMode: 'list',
       members: [],
       games: [],
       inputScores: [],
-      updateGame: null
-    }
+      updateGame: null,
+      isInputTip: false
+    };
   },
   async asyncData({ params }) {
     const token = params.token;
     const [event, members, games] = await Promise.all([
       TolymerClient.get(`/guest_events/${token}`),
       TolymerClient.get(`/guest_events/${token}/guest_members`),
-      TolymerClient.get(`/guest_events/${token}/guest_games`),
+      TolymerClient.get(`/guest_events/${token}/guest_games`)
     ]);
     return {
       token: event.token,
       title: event.title,
       members,
       games,
-      inputScores: members.map(() => null),
+      inputScores: members.map(() => null)
     };
   },
   methods: {
@@ -112,27 +113,32 @@ export default {
       }, []);
     },
     toNewScore() {
-      this.switchViewTo("form");
+      this.switchViewTo('form');
     },
     toEditScore(game) {
-      this.switchViewTo("form");
+      this.switchViewTo('form');
       this.updateGame = game;
-      const topScore = Math.max(...(game.scores.map(s => s.point)));
+      const topScore = Math.max(...game.scores.map(s => s.point));
       this.inputScores = this.members.map(member => {
         const score = game.scores.find(s => s.member_id === member.id);
-        return score.point === topScore ? "top" : score.point;
+        return score.point === topScore ? 'top' : score.point;
       });
+    },
+    toTip() {
+      this.switchViewTo('form');
+      this.isInputTip = true;
     },
     switchViewTo(view) {
       this.inputScores = this.members.map(() => null);
       this.updateGame = null;
       this.viewMode = view;
+      this.isInputTip = false;
     },
     async save() {
       if (!this.isValidInput()) return;
 
       const scores = this.inputScores.map((score, i) => {
-        const point = (score === "top" ? this.topScore() : Number(score));
+        const point = score === 'top' ? this.topScore() : Number(score);
         return { member_id: this.members[i].id, point };
       });
 
@@ -145,15 +151,15 @@ export default {
         this.games.push({ id: game.id, scores });
       }
 
-      this.switchViewTo("list");
+      this.switchViewTo('list');
     },
     cancel() {
-      this.switchViewTo("list");
+      this.switchViewTo('list');
     },
     onInputScore() {
       // 'top'という値は入力されていないとみなす
       // 0 は入力されているとみなす
-      const isExistScore = score => score === 0 || (score && score !== "top");
+      const isExistScore = score => score === 0 || (score && score !== 'top');
 
       // 入力されているフィールドの値だけを抽出
       const existingScores = this.inputScores.filter(isExistScore);
@@ -161,28 +167,20 @@ export default {
       if (existingScores.length < 3) {
         // 入力が3未満の場合はまだ不完全
         // 全部入力済みの状態でどこかが消された場合は'top'がある状態でここにくるので'top'をnullに戻す
-        this.inputScores = this.inputScores.map(
-          s => (isExistScore(s) ? s : null)
-        );
+        this.inputScores = this.inputScores.map(s => (isExistScore(s) ? s : null));
       } else if (existingScores.length === 3) {
         // 入力が3以上の場合はトップ以外入力済み
-        this.inputScores = this.inputScores.map(
-          s => (s === 0 || s ? s : "top")
-        );
+        this.inputScores = this.inputScores.map(s => (s === 0 || s ? s : 'top'));
       } else {
-        throw new Error("Invalid input");
+        throw new Error('Invalid input');
       }
     },
     topScore() {
-      const amount = this.inputScores
-        .map(s => Number(s) || 0)
-        .reduce((acc, v) => acc + v, 0);
+      const amount = this.inputScores.map(s => Number(s) || 0).reduce((acc, v) => acc + v, 0);
       return amount < 0 ? -amount : null;
     },
     isValidInput() {
-      const existingScores = this.inputScores.filter(
-        s => s === 0 || (s && s !== "top")
-      );
+      const existingScores = this.inputScores.filter(s => s === 0 || (s && s !== 'top'));
       if (existingScores.length !== 3) return false;
 
       const topScore = this.topScore();
@@ -191,7 +189,7 @@ export default {
       // 1位より2位のほうが点数が大きい場合はinvalid
       return topScore && secondScore && topScore > secondScore;
     }
-  },
+  }
 };
 </script>
 
@@ -212,8 +210,15 @@ export default {
   background-color: #ccc;
 }
 
+.btn.tip {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
 .nav {
   padding: 10px 10px 20px 10px;
+  position: relative;
 }
 
 .nav .fa-times-circle {
@@ -261,7 +266,7 @@ export default {
   padding: 30px 10px 0 10px;
 }
 
-.formTable input[type="text"] {
+.formTable input[type='text'] {
   border: none;
   border-bottom: 1px solid #999;
   width: 80px;
@@ -274,7 +279,7 @@ export default {
   color: #333;
 }
 
-.formTable input[type="text"][disabled] {
+.formTable input[type='text'][disabled] {
   background-color: #fff566;
   color: #333;
   -webkit-text-fill-color: #333;

@@ -31,8 +31,8 @@ export default {
       title: event.title,
       date: event.date,
       description: event.description,
-      members: members,
+      members: members
     };
-  },
+  }
 };
 </script>

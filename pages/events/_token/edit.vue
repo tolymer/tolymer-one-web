@@ -34,7 +34,7 @@ export default {
       title: event.title,
       date: event.date,
       description: event.description,
-      members: members.map(m => m.name).join('\n'),
+      members: members.map(m => m.name).join('\n')
     };
   },
   methods: {
@@ -42,14 +42,14 @@ export default {
       const p1 = TolymerClient.patch(`/guest_events/${this.token}`, {
         title: this.title,
         date: this.date,
-        description: this.description,
+        description: this.description
       });
       const p2 = TolymerClient.post(`/guest_events/${this.token}/guest_members`, {
         names: this.members.split('\n')
       });
       await Promise.all([p1, p2]);
       this.$router.push(`/events/${this.token}`);
-    },
-  },
+    }
+  }
 };
 </script>
