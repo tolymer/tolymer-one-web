@@ -4,25 +4,25 @@
     <h1 class="appname">tolymer</h1>
     <div class="Form">
       <div class="Form-item">
-        <Input
+        <tm-input
           v-model="title"
           label="Title"
           placeholder="例）渋谷ZOO バスケ通り店"/>
       </div>
       <div class="Form-item">
-        <Input
+        <tm-input
           v-model="description"
           label="Description"
           placeholder="例）ワンツー、アリアリ"/>
       </div>
       <div class="Form-item">
-        <Input
+        <tm-input
           v-model="date"
           type="date"
           label="Date"/>
       </div>
       <div class="Form-item">
-        <Input
+        <tm-input
           v-model="members"
           type="textarea"
           :rows=5
@@ -34,10 +34,10 @@ hiloki
 tan_yuki"/>
       </div>
       <div class="Form-action">
-        <Button
+        <tm-button
           @click="submit()"
           class="Form-button"
-          kind="primary">Create event</Button>
+          kind="primary">Create event</tm-button>
       </div>
     </div>
   </main>
@@ -45,13 +45,13 @@ tan_yuki"/>
 
 <script>
 import TolymerClient from '../lib/TolymerClient';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import tmInput from '../components/tm-input';
+import tmButton from '../components/tm-button';
 
 export default {
   components: {
-    Input,
-    Button
+    tmInput,
+    tmButton
   },
   data() {
     return {

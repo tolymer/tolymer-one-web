@@ -44,7 +44,7 @@ export default {
   display: inline-block;
   height: 48px;
   padding: 0 16px;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: 100em;
   background-color: transparent;
   line-height: 48px;
@@ -64,11 +64,22 @@ export default {
 }
 
 .Button.-normal {
-  color: #2e282a;
-  border: 1px solid white;
-  background-color: white;
+  border: spx solid #f2eeec;
+  background-color: #f2eeec;
+  color: #2E282A;
 }
 
+.Button.-normal:hover {
+  border-color: #2E282A;
+}
+
+.Button.-normal:active {
+}
+
+.Button.-normal:focus {
+  border-color: #2E282A;
+  box-shadow: 0 0 0 3px #5dc0f6;
+}
 .Button.-primary {
   color: #2e282a;
   border: 2px solid #3de884;
