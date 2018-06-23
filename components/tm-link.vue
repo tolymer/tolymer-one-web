@@ -58,6 +58,7 @@ export default {
   border: 2px solid transparent;
   border-radius: 100em;
   background-color: transparent;
+  text-align: center;
   line-height: 48px;
   font-weight: bold;
   text-decoration: none;

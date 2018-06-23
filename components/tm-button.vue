@@ -47,6 +47,7 @@ export default {
   border: 2px solid transparent;
   border-radius: 100em;
   background-color: transparent;
+  text-align: center;
   line-height: 48px;
   font-weight: bold;
   transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
