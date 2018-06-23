@@ -1,32 +1,58 @@
 <template>
   <main>
-    <h1>Create Event</h1>
-
-    <h2>Title</h2>
-    <input type="text" v-model="title">
-
-    <h2>Description</h2>
-    <input type="text" v-model="description">
-
-    <h3>Date</h3>
-    <input type="date" v-model="date">
-
-    <h3>Members</h3>
-    <textarea rows="5" cols="40" v-model="members" placeholder="hokaccha
+    <div class="sticks"/>
+    <h1 class="appname">tolymer</h1>
+    <div class="Form">
+      <div class="Form-item">
+        <Input
+          v-model="title"
+          label="Title"
+          placeholder="例）渋谷ZOO バスケ通り店"/>
+      </div>
+      <div class="Form-item">
+        <Input
+          v-model="description"
+          label="Description"
+          placeholder="例）ワンツー、アリアリ"/>
+      </div>
+      <div class="Form-item">
+        <Input
+          v-model="date"
+          type="date"
+          label="Date"/>
+      </div>
+      <div class="Form-item">
+        <Input
+          v-model="members"
+          type="textarea"
+          :rows=5
+          :cols=40
+          label="Member"
+          placeholder="hokaccha
 1000ch
 hiloki
-tan_yuki"></textarea>
-
-    <div>
-      <button @click="submit()">Create</button>
+tan_yuki"/>
+      </div>
+      <div class="Form-action">
+        <Button
+          @click="submit()"
+          class="Form-button"
+          kind="primary">Create event</Button>
+      </div>
     </div>
   </main>
 </template>
 
 <script>
 import TolymerClient from '../lib/TolymerClient';
+import Input from '../components/Input';
+import Button from '../components/Button';
 
 export default {
+  components: {
+    Input,
+    Button
+  },
   data() {
     return {
       title: '',
@@ -51,5 +77,42 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.sticks {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 24px;
+  width: 313px;
+  height: 120px;
+  background-image: url('/static/sticks.svg');
+  background-size: 313px 214px;
+  background-position: center bottom;
+}
+
+.appname {
+  margin-bottom: 32px;
+  text-align: center;
+  font-size: 32px;
+}
+
+.Form {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  max-width: 640px;
+}
+
+.Form-item {
+  margin-bottom: 16px;
+}
+
+.Form-action {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.Form-button {
+  min-width: 240px;
+}
 </style>
