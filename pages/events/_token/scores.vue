@@ -1,11 +1,25 @@
 <template>
   <main>
-    <h1><nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link></h1>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="title">
+          <nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link>
+        </h1>
+      </div>
+    </header>
 
-    <div v-if="viewMode === 'list'">
+    <div
+      v-if="viewMode === 'list'"
+      class="body">
       <div class="nav">
-        <span class="btn new" @click="toNewScore()">New</span>
-        <span class="btn tip" @click="toTip()">Tip</span>
+        <tm-button
+          appearance="text"
+          class="new"
+          @click="toNewScore()">New</tm-button>
+        <tm-button
+          appearance="text"
+          class="tip"
+          @click="toTip()">Tip</tm-button>
       </div>
       <table class="scoreTable">
         <thead>
@@ -36,7 +50,12 @@
           </tr>
         </tfoot>
       </table>
+      <div v-if="!games.length > 0">
+        <tm-button
+          @click="toNewScore()">New score</tm-button>
+      </div>
     </div>
+
     <div v-if="viewMode === 'form'">
       <div class="nav">
         <span @click="cancel()">❌</span>
@@ -70,8 +89,12 @@
 
 <script>
 import TolymerClient from '../../../lib/TolymerClient';
+import tmButton from '../../../components/tm-button';
 
 export default {
+  components: {
+    tmButton
+  },
   data() {
     return {
       token: null,
@@ -193,32 +216,46 @@ export default {
 };
 </script>
 
-<style>
-.btn {
-  border-radius: 6px;
-  padding: 8px 15px;
-  font-size: 14px;
-  background-color: #337ab7;
-  color: #fff;
+<style scoped>
+.header {
+  background-color: #F9BF3B;
 }
 
-.btn > * {
-  vertical-align: middle;
+.header-inner {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px;
+  max-width: 640px;
 }
 
-.btn.inActive {
-  background-color: #ccc;
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 52px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.btn.tip {
-  position: absolute;
-  right: 0;
-  top: 0;
+.title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.body {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px 0;
+  max-width: 640px;
 }
 
 .nav {
-  padding: 10px 10px 20px 10px;
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 16px;
 }
 
 .nav .fa-times-circle {

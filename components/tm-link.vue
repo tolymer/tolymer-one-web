@@ -77,7 +77,7 @@ export default {
 }
 
 .Link.-button.-normal:hover {
-  border-color: #D3CCC9;
+  border-color: #;
 }
 
 .Link.-button.-normal:active {

@@ -1,8 +1,9 @@
 <template>
   <button
     :type="type"
+    :appearance="appearance"
     :kind="kind"
-    :class="[k]"
+    :class="[a,k]"
     class="Button"
     @click="onClick">
     <slot />
@@ -10,6 +11,7 @@
 </template>
 
 <script>
+const appearances = ['text', 'button'];
 const types = ['button', 'submit'];
 const kinds = ['normal', 'primary'];
 
@@ -20,6 +22,11 @@ export default {
       default: 'button',
       validator: t => types.indexOf(t) !== -1
     },
+    appearance: {
+      type: String,
+      default: 'button',
+      validator: a => appearances.indexOf(a) !== -1
+    },
     kind: {
       type: String,
       default: 'normal',
@@ -27,6 +34,9 @@ export default {
     }
   },
   computed: {
+    a() {
+      return `-${this.appearance}`;
+    },
     k() {
       return `-${this.kind}`;
     }
@@ -42,16 +52,6 @@ export default {
 <style scoped>
 .Button {
   display: inline-block;
-  height: 48px;
-  padding: 0 16px;
-  border: 2px solid transparent;
-  border-radius: 100em;
-  background-color: transparent;
-  text-align: center;
-  line-height: 48px;
-  font-weight: bold;
-  transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
-  will-change: border-color, box-shadow;
 }
 
 .Button:hover {
@@ -64,37 +64,54 @@ export default {
   outline: none;
 }
 
-.Button.-normal {
-  border: spx solid #f2eeec;
+.Button.-text {
+
+}
+
+.Button.-button {
+  height: 48px;
+  padding: 0 16px;
+  border: 2px solid transparent;
+  border-radius: 100em;
+  background-color: transparent;
+  text-align: center;
+  line-height: 48px;
+  font-weight: bold;
+  transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  will-change: border-color, box-shadow;
+}
+
+.Button.-button.-normal {
+  border: 2px solid #f2eeec;
   background-color: #f2eeec;
   color: #2E282A;
 }
 
-.Button.-normal:hover {
-  border-color: #2E282A;
+.Button.-button.-normal:hover {
+  border-color: #D3CCC9;
 }
 
-.Button.-normal:active {
+.Button.-button.-normal:active {
 }
 
-.Button.-normal:focus {
-  border-color: #2E282A;
+.Button.-button.-normal:focus {
+  border-color: #D3CCC9;
   box-shadow: 0 0 0 3px #5dc0f6;
 }
-.Button.-primary {
+.Button.-button.-primary {
   color: #2e282a;
   border: 2px solid #3de884;
   background-color: #3de884;
 }
 
-.Button.-primary:hover {
+.Button.-button.-primary:hover {
   border-color: #099f47;
 }
 
-.Button.-primary:active {
+.Button.-button.-primary:active {
 }
 
-.Button.-primary:focus {
+.Button.-button.-primary:focus {
   border-color: #099f47;
   box-shadow: 0 0 0 3px #5dc0f6;
 }
