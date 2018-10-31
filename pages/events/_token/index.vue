@@ -17,22 +17,22 @@
         <p>{{ description }}</p>
       </div>
       <ul class="member">
-        <li v-for="(member, i) in members" :key="i">{{ member.name }}</li>
+        <li v-for="(partipant, i) in participants" :key="i">{{ partipant.name }}</li>
       </ul>
       <div class="action">
         <tm-link
-          :to="`/events/${token}/scores`"
+          :to="`/events/${token}/results`"
           appearance="button"
           kind="primary"
-          class="inputScore">Input scores</tm-link>
+          class="inputResult">Input Result</tm-link>
       </div>
     </div>
   </main>
 </template>
 
 <script>
-import TolymerClient from '../../../lib/TolymerClient';
 import tmLink from '../../../components/tm-link';
+import { getEvent } from '../../../lib/TolymerGrpcClient';
 
 export default {
   components: {
@@ -40,16 +40,13 @@ export default {
   },
   async asyncData({ params }) {
     const token = params.token;
-    const [event, members] = await Promise.all([
-      TolymerClient.get(`/guest_events/${token}`),
-      TolymerClient.get(`/guest_events/${token}/guest_members`)
-    ]);
+    const event = await getEvent(token);
     return {
       token: event.token,
       title: event.title,
-      date: event.date,
+      date: `${event.date.year}/${event.date.month}/${event.date.day}`,
       description: event.description,
-      members: members
+      participants: event.participantsList
     };
   }
 };
@@ -57,7 +54,7 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #F9BF3B;
+  background-color: #f9bf3b;
 }
 
 .header-inner {
@@ -113,7 +110,8 @@ export default {
   margin-bottom: 16px;
 }
 
-.member {}
+.member {
+}
 
 .member > * {
   display: inline-block;
@@ -131,7 +129,7 @@ export default {
   text-align: center;
 }
 
-.inputScore {
+.inputResult {
   min-width: 240px;
 }
 

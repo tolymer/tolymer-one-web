@@ -44,9 +44,9 @@ tan_yuki"/>
 </template>
 
 <script>
-import TolymerClient from '../lib/TolymerClient';
 import tmInput from '../components/tm-input';
 import tmButton from '../components/tm-button';
+import { createEvent } from '../lib/TolymerGrpcClient';
 
 export default {
   components: {
@@ -63,15 +63,13 @@ export default {
   },
   methods: {
     async submit() {
-      const event = await TolymerClient.post('/guest_events', {
+      const token = await createEvent({
         title: this.title,
         description: this.description,
-        date: this.date
+        date: this.date,
+        members: this.members.split('\n')
       });
-      await TolymerClient.post(`/guest_events/${event.token}/guest_members`, {
-        names: this.members.split('\n')
-      });
-      this.$router.push(`/events/${event.token}`);
+      this.$router.push(`/events/${token}`);
     }
   }
 };

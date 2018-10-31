@@ -15,44 +15,43 @@
         <tm-button
           appearance="text"
           class="new"
-          @click="toNewScore()">New</tm-button>
+          @click="toNewResult()">New</tm-button>
         <tm-button
           appearance="text"
           class="tip"
           @click="toTip()">Tip</tm-button>
       </div>
-      <table class="scoreTable">
+      <table class="resultTable">
         <thead>
           <tr>
             <th></th>
-            <th v-for="(member, i) in members" :key="i">
-              {{member.name}}
-            </th>
+            <th v-for="(participant, i) in participants" :key="i">{{participant.name}}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(game, i) in games" :key="i">
             <th>{{i + 1}}</th>
-            <td v-for="(member, j) in members" :key="j">
-              {{game.scores.find(s => s.member_id === member.id).point}}
-            </td>
-            <th><span @click="toEditScore(game)">Edit</span></th>
+            <td
+              v-for="(participant, j) in participants"
+              :key="j"
+            >{{game.resultsList.find(s => s.participantId === participant.id).score}}</td>
+            <th>
+              <span @click="toEditResult(game)">Edit</span>
+            </th>
           </tr>
         </tbody>
         <tfoot v-if="games.length > 0">
           <tr class="totalRow">
             <th></th>
-            <td v-for="(totalScore, i) in calcTotalScores()" :key="i">
-              {{totalScore}}
-            </td>
+            <td v-for="(totalResult, i) in calcTotalResults()" :key="i">{{totalResult.valueOf()}}</td>
             <th></th>
           </tr>
         </tfoot>
       </table>
       <div v-if="!games.length > 0">
         <tm-button
-          @click="toNewScore()">New score</tm-button>
+          @click="toNewResult()">New</tm-button>
       </div>
     </div>
 
@@ -60,22 +59,21 @@
       <div class="nav">
         <span @click="cancel()">❌</span>
       </div>
-      <h2 v-if="isInputTip">Tip</h2>
       <table class="formTable">
         <thead>
           <th>Name</th>
-          <th>Score</th>
+          <th>Result</th>
         </thead>
         <tbody>
-          <tr v-for="(inputScore, i) in inputScores" :key="i">
-            <td>{{members[i].name}}</td>
+          <tr v-for="(inputResult, i) in inputResults" :key="i">
+            <td>{{participants[i].name}}</td>
             <td>
-              <span v-if="inputScore === 'top'">
-              <input type="text" disabled v-bind:value="topScore()">
-            </span>
-              <span v-if="inputScore !== 'top'">
-              <input v-model="inputScores[i]" v-on:input="onInputScore()" type="text">
-            </span>
+              <span v-if="inputResult === 'top'">
+                <input type="text" disabled v-bind:value="topResult()">
+              </span>
+              <span v-if="inputResult !== 'top'">
+                <input v-model="inputResults[i]" v-on:input="onInputResult()" type="text">
+              </span>
             </td>
           </tr>
         </tbody>
@@ -88,8 +86,9 @@
 </template>
 
 <script>
-import TolymerClient from '../../../lib/TolymerClient';
 import tmButton from '../../../components/tm-button';
+import { getEvent, createGame, updateGame } from '../../../lib/TolymerGrpcClient';
+import Big from 'big.js';
 
 export default {
   components: {
@@ -100,78 +99,71 @@ export default {
       token: null,
       title: '',
       viewMode: 'list',
-      members: [],
+      participants: [],
       games: [],
-      inputScores: [],
-      updateGame: null,
-      isInputTip: false
+      inputResults: [],
+      updateGame: null
     };
   },
   async asyncData({ params }) {
     const token = params.token;
-    const [event, members, games] = await Promise.all([
-      TolymerClient.get(`/guest_events/${token}`),
-      TolymerClient.get(`/guest_events/${token}/guest_members`),
-      TolymerClient.get(`/guest_events/${token}/guest_games`)
-    ]);
+    const event = await getEvent(token);
     return {
       token: event.token,
       title: event.title,
-      members,
-      games,
-      inputScores: members.map(() => null)
+      participants: event.participantsList,
+      games: event.gamesList,
+      inputResults: event.participantsList.map(() => null)
     };
   },
   methods: {
-    calcTotalScores() {
+    calcTotalResults() {
       return this.games.reduce((acc, game) => {
-        this.members.forEach((member, i) => {
-          const score = game.scores.find(s => s.member_id === member.id);
+        this.participants.forEach((participant, i) => {
+          const result = game.resultsList.find(s => s.participantId === participant.id);
           if (acc[i] == null) {
-            acc[i] = 0;
+            acc[i] = new Big(0);
           }
-          acc[i] += score.point;
+          acc[i] = acc[i].plus(result.score);
         });
         return acc;
       }, []);
     },
-    toNewScore() {
+    toNewResult() {
       this.switchViewTo('form');
-    },
-    toEditScore(game) {
-      this.switchViewTo('form');
-      this.updateGame = game;
-      const topScore = Math.max(...game.scores.map(s => s.point));
-      this.inputScores = this.members.map(member => {
-        const score = game.scores.find(s => s.member_id === member.id);
-        return score.point === topScore ? 'top' : score.point;
-      });
     },
     toTip() {
+      // TODO
+    },
+    toEditResult(game) {
       this.switchViewTo('form');
-      this.isInputTip = true;
+      this.updateGame = game;
+      const topResult = Math.max(...game.resultsList.map(s => s.score));
+      this.inputResults = this.participants.map(participant => {
+        const result = game.resultsList.find(s => s.participantId === participant.id);
+        return result.score === topResult ? 'top' : result.score;
+      });
     },
     switchViewTo(view) {
-      this.inputScores = this.members.map(() => null);
+      this.inputResults = this.participants.map(() => null);
       this.updateGame = null;
       this.viewMode = view;
-      this.isInputTip = false;
     },
     async save() {
       if (!this.isValidInput()) return;
 
-      const scores = this.inputScores.map((score, i) => {
-        const point = score === 'top' ? this.topScore() : Number(score);
-        return { member_id: this.members[i].id, point };
+      const results = this.inputResults.map((result, i) => {
+        const score = result === 'top' ? this.topResult() : Number(result);
+        return { participantId: this.participants[i].id, score };
       });
 
       if (this.updateGame) {
         const game = this.games.find(g => g.id === this.updateGame.id);
-        TolymerClient.patch(`/guest_games/${game.id}`, { scores });
-        game.scores = scores;
+        await updateGame({ token: this.token, gameId: game.id, results });
+        game.resultsList = results;
       } else {
-        const game = TolymerClient.post(`/guest_events/${this.token}/guest_games`, { scores });
-        this.games.push({ id: game.id, scores });
+        const game = await createGame({ token: this.token, results });
+        this.games.push({ id: game.id, resultsList: results });
       }
 
       this.switchViewTo('list');
@@ -179,38 +171,38 @@ export default {
     cancel() {
       this.switchViewTo('list');
     },
-    onInputScore() {
+    onInputResult() {
       // 'top'という値は入力されていないとみなす
       // 0 は入力されているとみなす
-      const isExistScore = score => score === 0 || (score && score !== 'top');
+      const isExistResult = result => result === 0 || (result && result !== 'top');
 
       // 入力されているフィールドの値だけを抽出
-      const existingScores = this.inputScores.filter(isExistScore);
+      const existingResults = this.inputResults.filter(isExistResult);
 
-      if (existingScores.length < 3) {
+      if (existingResults.length < 3) {
         // 入力が3未満の場合はまだ不完全
         // 全部入力済みの状態でどこかが消された場合は'top'がある状態でここにくるので'top'をnullに戻す
-        this.inputScores = this.inputScores.map(s => (isExistScore(s) ? s : null));
-      } else if (existingScores.length === 3) {
+        this.inputResults = this.inputResults.map(s => (isExistResult(s) ? s : null));
+      } else if (existingResults.length === 3) {
         // 入力が3以上の場合はトップ以外入力済み
-        this.inputScores = this.inputScores.map(s => (s === 0 || s ? s : 'top'));
+        this.inputResults = this.inputResults.map(s => (s === 0 || s ? s : 'top'));
       } else {
         throw new Error('Invalid input');
       }
     },
-    topScore() {
-      const amount = this.inputScores.map(s => Number(s) || 0).reduce((acc, v) => acc + v, 0);
+    topResult() {
+      const amount = this.inputResults.map(s => Number(s) || 0).reduce((acc, v) => acc.plus(v), new Big(0));
       return amount < 0 ? -amount : null;
     },
     isValidInput() {
-      const existingScores = this.inputScores.filter(s => s === 0 || (s && s !== 'top'));
-      if (existingScores.length !== 3) return false;
+      const existingResults = this.inputResults.filter(s => s === 0 || (s && s !== 'top'));
+      if (existingResults.length !== 3) return false;
 
-      const topScore = this.topScore();
-      const secondScore = Math.max(...existingScores.map(Number));
+      const topResult = this.topResult();
+      const secondResult = Math.max(...existingResults.map(Number));
 
       // 1位より2位のほうが点数が大きい場合はinvalid
-      return topScore && secondScore && topScore > secondScore;
+      return topResult && secondResult && topResult > secondResult;
     }
   }
 };
@@ -218,7 +210,7 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #F9BF3B;
+  background-color: #f9bf3b;
 }
 
 .header-inner {
@@ -263,18 +255,18 @@ export default {
   color: #666;
 }
 
-.scoreTable {
+.resultTable {
   border-collapse: collapse;
   width: 100%;
 }
 
-.scoreTable td,
-.scoreTable th {
+.resultTable td,
+.resultTable th {
   border: 1px solid #333;
   padding: 5px;
 }
 
-.scoreTable td {
+.resultTable td {
   text-align: right;
   width: 60px;
 }
@@ -284,7 +276,7 @@ export default {
   background-color: #ffc490;
 }
 
-.scoreTable .fa-edit {
+.resultTable .fa-edit {
   color: #398439;
 }
 

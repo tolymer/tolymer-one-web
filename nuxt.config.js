@@ -37,6 +37,9 @@ module.exports = {
           exclude: /(node_modules)/
         });
       }
+    },
+    babel: {
+      plugins: ['transform-es2015-modules-commonjs']
     }
   }
 };

@@ -52,9 +52,9 @@
 </template>
 
 <script>
-import TolymerClient from '../../../lib/TolymerClient';
 import tmInput from '../../../components/tm-input';
 import tmButton from '../../../components/tm-button';
+import { getEvent, updateEvent } from '../../../lib/TolymerGrpcClient';
 
 export default {
   components: {
@@ -63,29 +63,23 @@ export default {
   },
   async asyncData({ params }) {
     const token = params.token;
-    const [event, members] = await Promise.all([
-      TolymerClient.get(`/guest_events/${token}`),
-      TolymerClient.get(`/guest_events/${token}/guest_members`)
-    ]);
+    const event = await getEvent(token);
+    const pad = n => (n.toString().length === 1 ? `0${n}` : n);
     return {
       token: event.token,
       title: event.title,
-      date: event.date,
-      description: event.description,
-      members: members.map(m => m.name).join('\n')
+      date: `${event.date.year}-${pad(event.date.month)}-${pad(event.date.day)}`,
+      description: event.description
     };
   },
   methods: {
     async submit() {
-      const p1 = TolymerClient.patch(`/guest_events/${this.token}`, {
+      await updateEvent({
+        token: this.token,
         title: this.title,
         date: this.date,
         description: this.description
       });
-      const p2 = TolymerClient.post(`/guest_events/${this.token}/guest_members`, {
-        names: this.members.split('\n')
-      });
-      await Promise.all([p1, p2]);
       this.$router.push(`/events/${this.token}`);
     }
   }
@@ -94,7 +88,7 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #F9BF3B;
+  background-color: #f9bf3b;
 }
 
 .header-inner {

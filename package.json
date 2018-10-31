@@ -11,7 +11,8 @@
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix": "prettier '**/*.{vue,js}' --write",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "proto": "protoc -I ../tolymer-grpc-server/proto tolymer.proto --js_out=import_style=commonjs:lib --grpc-web_out=import_style=commonjs,mode=grpcwebtext:lib"
   },
   "config": {
     "nuxt": {
@@ -19,11 +20,15 @@
     }
   },
   "dependencies": {
+    "big.js": "^5.2.2",
+    "google-protobuf": "^3.6.1",
+    "grpc-web": "^1.0.0",
     "normalize.css": "^8.0.0",
     "nuxt": "^1.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "eslint": "^4.15.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.7.1",
