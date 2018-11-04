@@ -5,19 +5,65 @@
 </template>
 
 <style>
-body {
-  font-family: sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #efefef;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
-.app {
-  width: 480px;
-  margin: 0 auto;
-  padding: 10px;
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: #fff;
+html {
+  background-color: #fcfcfb;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-family: 'Asap', sans-serif;
+  color: #2e282a;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+ul,
+ol,
+li,
+dl,
+dt,
+dd {
+  margin: 0;
+  font-size: 1rem;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+hr {
+  height: 0;
+}
+
+small {
+  font-size: 80%;
+}
+
+img,
+svg {
+  vertical-align: middle;
+}
+
+button {
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
 }
 </style>
