@@ -40,8 +40,18 @@
               <span @click="toEditResult(game)">Edit</span>
             </th>
           </tr>
+          <tr v-if="tip" class="tipRow">
+            <th>Tip</th>
+            <td
+              v-for="(participant, j) in participants"
+              :key="j"
+            >{{tip.resultsList.find(s => s.participantId === participant.id).score}}</td>
+            <th>
+              <span @click="toEditTip()">Edit</span>
+            </th>
+          </tr>
         </tbody>
-        <tfoot v-if="games.length > 0">
+        <tfoot v-if="games.length > 0 || tip">
           <tr class="totalRow">
             <th></th>
             <td v-for="(totalResult, i) in calcTotalResults()" :key="i">{{totalResult.valueOf()}}</td>
@@ -58,6 +68,7 @@
     <div v-if="viewMode === 'form'">
       <div class="nav">
         <span @click="cancel()">❌</span>
+        <span v-if="isInputTip">Input Tip</span>
       </div>
       <table class="formTable">
         <thead>
@@ -87,7 +98,7 @@
 
 <script>
 import tmButton from '../../../components/tm-button';
-import { getEvent, createGame, updateGame } from '../../../lib/TolymerGrpcClient';
+import { getEvent, createGame, updateGame, postTip } from '../../../lib/TolymerGrpcClient';
 import Big from 'big.js';
 
 export default {
@@ -101,8 +112,10 @@ export default {
       viewMode: 'list',
       participants: [],
       games: [],
+      tip: null,
       inputResults: [],
-      updateGame: null
+      updateGame: null,
+      isInputTip: false
     };
   },
   async asyncData({ params }) {
@@ -113,12 +126,13 @@ export default {
       title: event.title,
       participants: event.participantsList,
       games: event.gamesList,
+      tip: event.tip,
       inputResults: event.participantsList.map(() => null)
     };
   },
   methods: {
     calcTotalResults() {
-      return this.games.reduce((acc, game) => {
+      const total = this.games.reduce((acc, game) => {
         this.participants.forEach((participant, i) => {
           const result = game.resultsList.find(s => s.participantId === participant.id);
           if (acc[i] == null) {
@@ -128,12 +142,23 @@ export default {
         });
         return acc;
       }, []);
+      if (this.tip) {
+        this.participants.forEach((participant, i) => {
+          const result = this.tip.resultsList.find(s => s.participantId === participant.id);
+          if (total[i] == null) {
+            total[i] = new Big(0);
+          }
+          total[i] = total[i].plus(result.score);
+        });
+      }
+      return total;
     },
     toNewResult() {
       this.switchViewTo('form');
     },
     toTip() {
-      // TODO
+      this.switchViewTo('form');
+      this.isInputTip = true;
     },
     toEditResult(game) {
       this.switchViewTo('form');
@@ -144,9 +169,19 @@ export default {
         return result.score === topResult ? 'top' : result.score;
       });
     },
+    toEditTip() {
+      this.switchViewTo('form');
+      this.isInputTip = true;
+      const topResult = Math.max(...this.tip.resultsList.map(s => s.score));
+      this.inputResults = this.participants.map(participant => {
+        const result = this.tip.resultsList.find(s => s.participantId === participant.id);
+        return result.score === topResult ? 'top' : result.score;
+      });
+    },
     switchViewTo(view) {
       this.inputResults = this.participants.map(() => null);
       this.updateGame = null;
+      this.isInputTip = false;
       this.viewMode = view;
     },
     async save() {
@@ -157,7 +192,10 @@ export default {
         return { participantId: this.participants[i].id, score };
       });
 
-      if (this.updateGame) {
+      if (this.isInputTip) {
+        await postTip({ token: this.token, results });
+        this.tip = { resultsList: results };
+      } else if (this.updateGame) {
         const game = this.games.find(g => g.id === this.updateGame.id);
         await updateGame({ token: this.token, gameId: game.id, results });
         game.resultsList = results;
@@ -274,6 +312,11 @@ export default {
 .totalRow td,
 .totalRow th {
   background-color: #ffc490;
+}
+
+.tipRow td,
+.tipRow th {
+  background-color: #90dfff;
 }
 
 .resultTable .fa-edit {
