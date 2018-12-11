@@ -37,7 +37,9 @@
               :key="j"
             >{{game.resultsList.find(s => s.participantId === participant.id).score}}</td>
             <th>
-              <span @click="toEditResult(game)">Edit</span>
+              <span @click="toEditResult(game)">✏️</span>
+              /
+              <span @click="deleteGame(game)">🗑</span>
             </th>
           </tr>
           <tr v-if="tip" class="tipRow">
@@ -47,7 +49,9 @@
               :key="j"
             >{{tip.resultsList.find(s => s.participantId === participant.id).score}}</td>
             <th>
-              <span @click="toEditTip()">Edit</span>
+              <span @click="toEditTip()">✏️</span>
+              /
+              <span @click="deleteTip()">🗑</span>
             </th>
           </tr>
         </tbody>
@@ -98,7 +102,7 @@
 
 <script>
 import tmButton from '../../../components/tm-button';
-import { getEvent, createGame, updateGame, postTip } from '../../../lib/TolymerGrpcClient';
+import * as client from '../../../lib/TolymerGrpcClient';
 import Big from 'big.js';
 
 export default {
@@ -120,7 +124,7 @@ export default {
   },
   async asyncData({ params }) {
     const token = params.token;
-    const event = await getEvent(token);
+    const event = await client.getEvent(token);
     return {
       token: event.token,
       title: event.title,
@@ -193,14 +197,14 @@ export default {
       });
 
       if (this.isInputTip) {
-        await postTip({ token: this.token, results });
+        await client.postTip({ token: this.token, results });
         this.tip = { resultsList: results };
       } else if (this.updateGame) {
         const game = this.games.find(g => g.id === this.updateGame.id);
-        await updateGame({ token: this.token, gameId: game.id, results });
+        await client.updateGame({ token: this.token, gameId: game.id, results });
         game.resultsList = results;
       } else {
-        const game = await createGame({ token: this.token, results });
+        const game = await client.createGame({ token: this.token, results });
         this.games.push({ id: game.id, resultsList: results });
       }
 
@@ -227,6 +231,24 @@ export default {
       } else {
         throw new Error('Invalid input');
       }
+    },
+    async reload() {
+      const event = await client.getEvent(this.token);
+      this.title = event.title;
+      this.participants = event.participantsList;
+      this.games = event.gamesList;
+      this.tip = event.tip;
+      this.inputResults = event.participantsList.map(() => null);
+    },
+    async deleteGame(game) {
+      if (!window.confirm('削除します。よろしいですか？')) return;
+      await client.deleteGame({ token: this.token, gameId: game.id });
+      await this.reload();
+    },
+    async deleteTip() {
+      if (!window.confirm('削除します。よろしいですか？')) return;
+      await client.deleteTip({ token: this.token });
+      await this.reload();
     },
     topResult() {
       const amount = this.inputResults.map(s => Number(s) || 0).reduce((acc, v) => acc.plus(v), new Big(0));
