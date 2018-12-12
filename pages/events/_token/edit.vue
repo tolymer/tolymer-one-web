@@ -28,18 +28,13 @@
             type="date"
             label="Date"/>
         </div>
-        <div class="Form-item">
-          <tm-input
-            v-model="members"
-            type="textarea"
-            :rows=5
-            :cols=40
-            label="Member"
-            placeholder="hokaccha
-    1000ch
-    hiloki
-    tan_yuki"/>
-        </div>
+
+        <h3>参加者</h3>
+        <ul>
+          <li v-for="(participant, i) in participants" :key="i">
+            <tm-input type="text" v-model="participant.name" />
+          </li>
+        </ul>
         <div class="Form-action">
           <tm-button
             @click="submit()"
@@ -54,7 +49,7 @@
 <script>
 import tmInput from '../../../components/tm-input';
 import tmButton from '../../../components/tm-button';
-import { getEvent, updateEvent } from '../../../lib/TolymerGrpcClient';
+import { getEvent, updateEvent, updateParticipants } from '../../../lib/TolymerGrpcClient';
 
 export default {
   components: {
@@ -69,7 +64,8 @@ export default {
       token: event.token,
       title: event.title,
       date: `${event.date.year}-${pad(event.date.month)}-${pad(event.date.day)}`,
-      description: event.description
+      description: event.description,
+      participants: event.participantsList
     };
   },
   methods: {
@@ -80,6 +76,7 @@ export default {
         date: this.date,
         description: this.description
       });
+      await updateParticipants({ token: this.token, renamingParticipants: this.participants });
       this.$router.push(`/events/${this.token}`);
     }
   }
