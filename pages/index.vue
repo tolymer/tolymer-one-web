@@ -5,39 +5,32 @@
     <div class="Form">
       <div class="Form-item">
         <tm-input
-          v-model="title"
-          label="Title"
-          placeholder="例）渋谷ZOO バスケ通り店"/>
+          v-model="participants"
+          type="textarea"
+          :rows=4
+          :cols=40
+          label="参加者（必須）"
+          placeholder="すずきさん
+さとうくん
+たなかさん
+きむらくん"/>
       </div>
       <div class="Form-item">
         <tm-input
           v-model="description"
-          label="Description"
-          placeholder="例）ワンツー、アリアリ"/>
-      </div>
-      <div class="Form-item">
-        <tm-input
-          v-model="date"
-          type="date"
-          label="Date"/>
-      </div>
-      <div class="Form-item">
-        <tm-input
-          v-model="members"
           type="textarea"
           :rows=5
           :cols=40
-          label="Member"
-          placeholder="hokaccha
-1000ch
-hiloki
-tan_yuki"/>
+          label="概要"
+          placeholder="例）
+場所: 渋谷 Zoo
+日程: 2018/12/10"/>
       </div>
       <div class="Form-action">
         <tm-button
           @click="submit()"
           class="Form-button"
-          kind="primary">Create event</tm-button>
+          kind="primary">イベント作成</tm-button>
       </div>
     </div>
   </main>
@@ -55,19 +48,15 @@ export default {
   },
   data() {
     return {
-      title: '',
       description: '',
-      date: '',
-      members: ''
+      participants: ''
     };
   },
   methods: {
     async submit() {
       const token = await createEvent({
-        title: this.title,
         description: this.description,
-        date: this.date,
-        members: this.members.split('\n')
+        participants: this.participants.split('\n')
       });
       this.$router.push(`/events/${token}`);
     }

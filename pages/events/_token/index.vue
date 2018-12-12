@@ -2,8 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <p class="date">{{ date }}</p>
-        <h1 class="title">{{ title }}</h1>
+        <h1 class="title">Event Top</h1>
         <div class="edit">
           <nuxt-link
             :to="`/events/${token}/edit`"
@@ -43,8 +42,6 @@ export default {
     const event = await getEvent(token);
     return {
       token: event.token,
-      title: event.title,
-      date: `${event.date.year}/${event.date.month}/${event.date.day}`,
       description: event.description,
       participants: event.participantsList
     };
@@ -63,10 +60,6 @@ export default {
   margin-right: auto;
   padding: 16px;
   max-width: 640px;
-}
-
-.date {
-  margin-bottom: 8px;
 }
 
 .title {

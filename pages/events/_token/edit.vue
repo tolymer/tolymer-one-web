@@ -3,7 +3,7 @@
     <header class="header">
       <div class="header-inner">
         <h1 class="title">
-          <nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link>
+          <nuxt-link :to="`/events/${token}`">Event Top</nuxt-link>
         </h1>
       </div>
     </header>
@@ -12,21 +12,14 @@
       <div class="Form">
         <div class="Form-item">
           <tm-input
-            v-model="title"
-            label="Title"
-            placeholder="例）渋谷ZOO バスケ通り店"/>
-        </div>
-        <div class="Form-item">
-          <tm-input
             v-model="description"
-            label="Description"
-            placeholder="例）ワンツー、アリアリ"/>
-        </div>
-        <div class="Form-item">
-          <tm-input
-            v-model="date"
-            type="date"
-            label="Date"/>
+            type="textarea"
+            :rows=5
+            :cols=40
+            label="概要"
+            placeholder="例）
+  場所: 渋谷 Zoo
+  日程: 2018/12/10"/>
         </div>
 
         <h3>参加者</h3>
@@ -62,8 +55,6 @@ export default {
     const pad = n => (n.toString().length === 1 ? `0${n}` : n);
     return {
       token: event.token,
-      title: event.title,
-      date: `${event.date.year}-${pad(event.date.month)}-${pad(event.date.day)}`,
       description: event.description,
       participants: event.participantsList
     };
@@ -72,8 +63,6 @@ export default {
     async submit() {
       await updateEvent({
         token: this.token,
-        title: this.title,
-        date: this.date,
         description: this.description
       });
       await updateParticipants({ token: this.token, renamingParticipants: this.participants });

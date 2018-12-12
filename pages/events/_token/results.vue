@@ -3,7 +3,7 @@
     <header class="header">
       <div class="header-inner">
         <h1 class="title">
-          <nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link>
+          <nuxt-link :to="`/events/${token}`">Event Top</nuxt-link>
         </h1>
       </div>
     </header>
@@ -127,7 +127,6 @@ export default {
     const event = await client.getEvent(token);
     return {
       token: event.token,
-      title: event.title,
       participants: event.participantsList,
       games: event.gamesList,
       tip: event.tip,
@@ -234,7 +233,6 @@ export default {
     },
     async reload() {
       const event = await client.getEvent(this.token);
-      this.title = event.title;
       this.participants = event.participantsList;
       this.games = event.gamesList;
       this.tip = event.tip;
