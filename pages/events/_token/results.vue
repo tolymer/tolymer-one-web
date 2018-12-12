@@ -2,9 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1 class="title">
-          <nuxt-link :to="`/events/${token}`">Event Top</nuxt-link>
-        </h1>
+        <nuxt-link class="back" :to="`/events/${token}`">＜</nuxt-link>
       </div>
     </header>
 
@@ -13,13 +11,12 @@
       class="body">
       <div class="nav">
         <tm-button
-          appearance="text"
           class="new"
-          @click="toNewResult()">New</tm-button>
+          kind="primary"
+          @click="toNewResult()">結果入力</tm-button>
         <tm-button
-          appearance="text"
           class="tip"
-          @click="toTip()">Tip</tm-button>
+          @click="toTip()">チップ</tm-button>
       </div>
       <table class="resultTable">
         <thead>
@@ -63,10 +60,6 @@
           </tr>
         </tfoot>
       </table>
-      <div v-if="!games.length > 0">
-        <tm-button
-          @click="toNewResult()">New</tm-button>
-      </div>
     </div>
 
     <div v-if="viewMode === 'form'">
@@ -279,16 +272,9 @@ export default {
   max-width: 640px;
 }
 
-.title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 52px;
+.back {
   font-size: 16px;
   font-weight: bold;
-}
-
-.title a {
   color: inherit;
   text-decoration: none;
 }

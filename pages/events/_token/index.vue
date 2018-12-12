@@ -2,20 +2,19 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1 class="title">Event Top</h1>
+        <h1 class="title">Tolymer</h1>
         <div class="edit">
           <nuxt-link
             :to="`/events/${token}/edit`"
-            class="edit-tm-iconLink">E</nuxt-link>
+            class="edit-tm-iconLink">編集</nuxt-link>
           <!-- FIXME: @hiloki 編集ボタンをアイコンリンクにする -->
         </div>
       </div>
     </header>
     <div class="body">
-      <div class="description">
-        <p>{{ description }}</p>
-      </div>
-      <ul class="member">
+      <div class="description">{{ description }}</div>
+      <h2>参加者</h2>
+      <ul class="participant">
         <li v-for="(partipant, i) in participants" :key="i">{{ partipant.name }}</li>
       </ul>
       <div class="action">
@@ -23,7 +22,7 @@
           :to="`/events/${token}/results`"
           appearance="button"
           kind="primary"
-          class="inputResult">Input Result</tm-link>
+          class="inputResult">点数表</tm-link>
       </div>
     </div>
   </main>
@@ -101,17 +100,19 @@ export default {
 
 .description {
   margin-bottom: 16px;
+  white-space: pre-wrap;
 }
 
-.member {
+.participant {
+  margin-top: 10px;
 }
 
-.member > * {
+.participant > * {
   display: inline-block;
   margin-bottom: 8px;
 }
 
-.member > * + *::before {
+.participant > * + *::before {
   content: ',';
   margin-right: 0.5em;
   display: inline-block;

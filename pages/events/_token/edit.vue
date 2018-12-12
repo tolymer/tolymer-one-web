@@ -2,9 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1 class="title">
-          <nuxt-link :to="`/events/${token}`">Event Top</nuxt-link>
-        </h1>
+        <nuxt-link class="back" :to="`/events/${token}`">＜</nuxt-link>
       </div>
     </header>
 
@@ -32,7 +30,7 @@
           <tm-button
             @click="submit()"
             class="Form-button"
-            kind="primary">Edit event</tm-button>
+            kind="primary">変更</tm-button>
         </div>
       </div>
     </div>
@@ -85,16 +83,9 @@ export default {
   max-width: 640px;
 }
 
-.title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 52px;
+.back {
   font-size: 16px;
   font-weight: bold;
-}
-
-.title a {
   color: inherit;
   text-decoration: none;
 }
