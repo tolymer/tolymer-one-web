@@ -13,7 +13,7 @@
 <script>
 const appearances = ['text', 'button'];
 const types = ['button', 'submit'];
-const kinds = ['normal', 'primary'];
+const kinds = ['normal', 'primary', 'disabled'];
 
 export default {
   props: {
@@ -43,7 +43,9 @@ export default {
   },
   methods: {
     onClick(e) {
-      this.$emit('click', e);
+      if (this.kind !== 'disabled') {
+        this.$emit('click', e);
+      }
     }
   }
 };
@@ -65,7 +67,6 @@ export default {
 }
 
 .Button.-text {
-
 }
 
 .Button.-button {
@@ -84,18 +85,18 @@ export default {
 .Button.-button.-normal {
   border: 2px solid #f2eeec;
   background-color: #f2eeec;
-  color: #2E282A;
+  color: #2e282a;
 }
 
 .Button.-button.-normal:hover {
-  border-color: #D3CCC9;
+  border-color: #d3ccc9;
 }
 
 .Button.-button.-normal:active {
 }
 
 .Button.-button.-normal:focus {
-  border-color: #D3CCC9;
+  border-color: #d3ccc9;
   box-shadow: 0 0 0 3px #5dc0f6;
 }
 .Button.-button.-primary {
@@ -114,5 +115,12 @@ export default {
 .Button.-button.-primary:focus {
   border-color: #099f47;
   box-shadow: 0 0 0 3px #5dc0f6;
+}
+
+.Button.-disabled {
+  border: 2px solid #f2eeec;
+  background-color: #f2eeec;
+  color: #8a8989;
+  pointer-events: none;
 }
 </style>

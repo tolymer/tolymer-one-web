@@ -87,16 +87,20 @@
         </tbody>
       </table>
       <div class="btns">
-        <span v-on:click="save()" :class="{ btn: true, inActive: !isValidInput() }">Save</span>
+        <tm-button
+          @click="save()"
+          class="Form-button"
+          :kind="isValidInput() ? 'primary' : 'disabled'">決定</tm-button>
       </div>
     </div>
   </main>
 </template>
 
 <script>
+import Big from 'big.js';
 import tmButton from '../../../components/tm-button';
 import * as client from '../../../lib/TolymerGrpcClient';
-import Big from 'big.js';
+import { alertError } from '../../../lib/errorHandler';
 
 export default {
   components: {
@@ -115,9 +119,15 @@ export default {
       isInputTip: false
     };
   },
-  async asyncData({ params }) {
+  async asyncData({ params, error }) {
     const token = params.token;
-    const event = await client.getEvent(token);
+    const [err, event] = await client.getEvent(token);
+
+    if (err) {
+      error({ statusCode: err.isNotFound() ? 404 : 500, message: err.message });
+      return;
+    }
+
     return {
       token: event.token,
       participants: event.participantsList,
@@ -181,7 +191,7 @@ export default {
       this.viewMode = view;
     },
     async save() {
-      if (!this.isValidInput()) return;
+      if (!this.isValidInput()) return console.error('Invalid input');
 
       const results = this.inputResults.map((result, i) => {
         const score = result === 'top' ? this.topResult() : Number(result);
@@ -189,14 +199,17 @@ export default {
       });
 
       if (this.isInputTip) {
-        await client.postTip({ token: this.token, results });
+        const [err] = await client.postTip({ token: this.token, results });
+        if (err) return alertError(err);
         this.tip = { resultsList: results };
       } else if (this.updateGame) {
         const game = this.games.find(g => g.id === this.updateGame.id);
-        await client.updateGame({ token: this.token, gameId: game.id, results });
+        const [err] = await client.updateGame({ token: this.token, gameId: game.id, results });
+        if (err) return alertError(err);
         game.resultsList = results;
       } else {
-        const game = await client.createGame({ token: this.token, results });
+        const [err, game] = await client.createGame({ token: this.token, results });
+        if (err) return alertError(err);
         this.games.push({ id: game.id, resultsList: results });
       }
 
@@ -225,7 +238,8 @@ export default {
       }
     },
     async reload() {
-      const event = await client.getEvent(this.token);
+      const [err, event] = await client.getEvent(this.token);
+      if (err) return alertError(err);
       this.participants = event.participantsList;
       this.games = event.gamesList;
       this.tip = event.tip;
@@ -233,12 +247,14 @@ export default {
     },
     async deleteGame(game) {
       if (!window.confirm('削除します。よろしいですか？')) return;
-      await client.deleteGame({ token: this.token, gameId: game.id });
+      const [err] = await client.deleteGame({ token: this.token, gameId: game.id });
+      if (err) return alertError(err);
       await this.reload();
     },
     async deleteTip() {
       if (!window.confirm('削除します。よろしいですか？')) return;
-      await client.deleteTip({ token: this.token });
+      const [err] = await client.deleteTip({ token: this.token });
+      if (err) return alertError(err);
       await this.reload();
     },
     topResult() {
@@ -253,7 +269,7 @@ export default {
       const secondResult = Math.max(...existingResults.map(Number));
 
       // 1位より2位のほうが点数が大きい場合はinvalid
-      return topResult && secondResult && topResult > secondResult;
+      return topResult && topResult > secondResult;
     }
   }
 };

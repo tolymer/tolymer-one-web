@@ -40,6 +40,7 @@
 import tmInput from '../components/tm-input';
 import tmButton from '../components/tm-button';
 import { createEvent } from '../lib/TolymerGrpcClient';
+import { alertError } from '../lib/errorHandler';
 
 export default {
   components: {
@@ -54,11 +55,16 @@ export default {
   },
   methods: {
     async submit() {
-      const token = await createEvent({
+      const [err, event] = await createEvent({
         description: this.description,
         participants: this.participants.split('\n')
       });
-      this.$router.push(`/events/${token}`);
+
+      if (err) {
+        alertError(err);
+      } else {
+        this.$router.push(`/events/${event.token}`);
+      }
     }
   }
 };

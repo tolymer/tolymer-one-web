@@ -36,9 +36,15 @@ export default {
   components: {
     tmLink
   },
-  async asyncData({ params }) {
+  async asyncData({ params, error }) {
     const token = params.token;
-    const event = await getEvent(token);
+    const [err, event] = await getEvent(token);
+
+    if (err) {
+      error({ statusCode: err.isNotFound() ? 404 : 500, message: err.message });
+      return;
+    }
+
     return {
       token: event.token,
       description: event.description,

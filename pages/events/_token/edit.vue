@@ -40,17 +40,23 @@
 <script>
 import tmInput from '../../../components/tm-input';
 import tmButton from '../../../components/tm-button';
-import { getEvent, updateEvent, updateParticipants } from '../../../lib/TolymerGrpcClient';
+import { getEvent, updateEvent, updateParticipants, GrpcError } from '../../../lib/TolymerGrpcClient';
+import { alertError } from '../../../lib/errorHandler';
 
 export default {
   components: {
     tmInput,
     tmButton
   },
-  async asyncData({ params }) {
+  async asyncData({ params, error }) {
     const token = params.token;
-    const event = await getEvent(token);
-    const pad = n => (n.toString().length === 1 ? `0${n}` : n);
+    const [err, event] = await getEvent(token);
+
+    if (err) {
+      error({ statusCode: err.isNotFound() ? 404 : 500, message: err.message });
+      return;
+    }
+
     return {
       token: event.token,
       description: event.description,
@@ -59,11 +65,12 @@ export default {
   },
   methods: {
     async submit() {
-      await updateEvent({
-        token: this.token,
-        description: this.description
-      });
-      await updateParticipants({ token: this.token, renamingParticipants: this.participants });
+      const [err1] = await updateEvent({ token: this.token, description: this.description });
+      if (err1) return alertError(err1);
+
+      const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });
+      if (err2) return alertError(err2);
+
       this.$router.push(`/events/${this.token}`);
     }
   }
