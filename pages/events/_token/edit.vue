@@ -2,9 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1 class="title">
-          <nuxt-link :to="`/events/${token}`">{{ title }}</nuxt-link>
-        </h1>
+        <nuxt-link class="back" :to="`/events/${token}`">＜</nuxt-link>
       </div>
     </header>
 
@@ -12,39 +10,27 @@
       <div class="Form">
         <div class="Form-item">
           <tm-input
-            v-model="title"
-            label="Title"
-            placeholder="例）渋谷ZOO バスケ通り店"/>
-        </div>
-        <div class="Form-item">
-          <tm-input
             v-model="description"
-            label="Description"
-            placeholder="例）ワンツー、アリアリ"/>
-        </div>
-        <div class="Form-item">
-          <tm-input
-            v-model="date"
-            type="date"
-            label="Date"/>
-        </div>
-        <div class="Form-item">
-          <tm-input
-            v-model="members"
             type="textarea"
             :rows=5
             :cols=40
-            label="Member"
-            placeholder="hokaccha
-    1000ch
-    hiloki
-    tan_yuki"/>
+            label="概要"
+            placeholder="例）
+  場所: 渋谷 Zoo
+  日程: 2018/12/10"/>
         </div>
+
+        <h3>参加者</h3>
+        <ul>
+          <li v-for="(participant, i) in participants" :key="i">
+            <tm-input type="text" v-model="participant.name" />
+          </li>
+        </ul>
         <div class="Form-action">
           <tm-button
             @click="submit()"
             class="Form-button"
-            kind="primary">Edit event</tm-button>
+            kind="primary">変更</tm-button>
         </div>
       </div>
     </div>
@@ -52,40 +38,39 @@
 </template>
 
 <script>
-import TolymerClient from '../../../lib/TolymerClient';
 import tmInput from '../../../components/tm-input';
 import tmButton from '../../../components/tm-button';
+import { getEvent, updateEvent, updateParticipants, GrpcError } from '../../../lib/TolymerGrpcClient';
+import { alertError } from '../../../lib/errorHandler';
 
 export default {
   components: {
     tmInput,
     tmButton
   },
-  async asyncData({ params }) {
+  async asyncData({ params, error }) {
     const token = params.token;
-    const [event, members] = await Promise.all([
-      TolymerClient.get(`/guest_events/${token}`),
-      TolymerClient.get(`/guest_events/${token}/guest_members`)
-    ]);
+    const [err, event] = await getEvent(token);
+
+    if (err) {
+      error({ statusCode: err.isNotFound() ? 404 : 500, message: err.message });
+      return;
+    }
+
     return {
       token: event.token,
-      title: event.title,
-      date: event.date,
       description: event.description,
-      members: members.map(m => m.name).join('\n')
+      participants: event.participantsList
     };
   },
   methods: {
     async submit() {
-      const p1 = TolymerClient.patch(`/guest_events/${this.token}`, {
-        title: this.title,
-        date: this.date,
-        description: this.description
-      });
-      const p2 = TolymerClient.post(`/guest_events/${this.token}/guest_members`, {
-        names: this.members.split('\n')
-      });
-      await Promise.all([p1, p2]);
+      const [err1] = await updateEvent({ token: this.token, description: this.description });
+      if (err1) return alertError(err1);
+
+      const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });
+      if (err2) return alertError(err2);
+
       this.$router.push(`/events/${this.token}`);
     }
   }
@@ -94,7 +79,7 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #F9BF3B;
+  background-color: #f9bf3b;
 }
 
 .header-inner {
@@ -105,16 +90,9 @@ export default {
   max-width: 640px;
 }
 
-.title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 52px;
+.back {
   font-size: 16px;
   font-weight: bold;
-}
-
-.title a {
   color: inherit;
   text-decoration: none;
 }

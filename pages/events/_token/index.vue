@@ -2,54 +2,53 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <p class="date">{{ date }}</p>
-        <h1 class="title">{{ title }}</h1>
+        <h1 class="title">Tolymer</h1>
         <div class="edit">
           <nuxt-link
             :to="`/events/${token}/edit`"
-            class="edit-tm-iconLink">E</nuxt-link>
+            class="edit-tm-iconLink">編集</nuxt-link>
           <!-- FIXME: @hiloki 編集ボタンをアイコンリンクにする -->
         </div>
       </div>
     </header>
     <div class="body">
-      <div class="description">
-        <p>{{ description }}</p>
-      </div>
-      <ul class="member">
-        <li v-for="(member, i) in members" :key="i">{{ member.name }}</li>
+      <div class="description">{{ description }}</div>
+      <h2>参加者</h2>
+      <ul class="participant">
+        <li v-for="(partipant, i) in participants" :key="i">{{ partipant.name }}</li>
       </ul>
       <div class="action">
         <tm-link
-          :to="`/events/${token}/scores`"
+          :to="`/events/${token}/results`"
           appearance="button"
           kind="primary"
-          class="inputScore">Input scores</tm-link>
+          class="inputResult">点数表</tm-link>
       </div>
     </div>
   </main>
 </template>
 
 <script>
-import TolymerClient from '../../../lib/TolymerClient';
 import tmLink from '../../../components/tm-link';
+import { getEvent } from '../../../lib/TolymerGrpcClient';
 
 export default {
   components: {
     tmLink
   },
-  async asyncData({ params }) {
+  async asyncData({ params, error }) {
     const token = params.token;
-    const [event, members] = await Promise.all([
-      TolymerClient.get(`/guest_events/${token}`),
-      TolymerClient.get(`/guest_events/${token}/guest_members`)
-    ]);
+    const [err, event] = await getEvent(token);
+
+    if (err) {
+      error({ statusCode: err.isNotFound() ? 404 : 500, message: err.message });
+      return;
+    }
+
     return {
       token: event.token,
-      title: event.title,
-      date: event.date,
       description: event.description,
-      members: members
+      participants: event.participantsList
     };
   }
 };
@@ -57,7 +56,7 @@ export default {
 
 <style scoped>
 .header {
-  background-color: #F9BF3B;
+  background-color: #f9bf3b;
 }
 
 .header-inner {
@@ -66,10 +65,6 @@ export default {
   margin-right: auto;
   padding: 16px;
   max-width: 640px;
-}
-
-.date {
-  margin-bottom: 8px;
 }
 
 .title {
@@ -111,16 +106,19 @@ export default {
 
 .description {
   margin-bottom: 16px;
+  white-space: pre-wrap;
 }
 
-.member {}
+.participant {
+  margin-top: 10px;
+}
 
-.member > * {
+.participant > * {
   display: inline-block;
   margin-bottom: 8px;
 }
 
-.member > * + *::before {
+.participant > * + *::before {
   content: ',';
   margin-right: 0.5em;
   display: inline-block;
@@ -131,7 +129,7 @@ export default {
   text-align: center;
 }
 
-.inputScore {
+.inputResult {
   min-width: 240px;
 }
 
