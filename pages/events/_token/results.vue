@@ -3,20 +3,19 @@
     <header class="header">
       <div class="header-inner">
         <nuxt-link class="back" :to="`/events/${token}`">＜</nuxt-link>
+        <h1>スコア一覧</h1>
       </div>
     </header>
 
-    <div
-      v-if="viewMode === 'list'"
-      class="body">
+    <div class="body">
       <div class="nav">
         <tm-button
           class="new"
           kind="primary"
-          @click="toNewResult()">結果入力</tm-button>
+          @click="toInputGame()">スコア入力</tm-button>
         <tm-button
           class="tip"
-          @click="toTip()">チップ</tm-button>
+          @click="toInputTip()">チップ入力</tm-button>
       </div>
       <table class="resultTable">
         <thead>
@@ -34,7 +33,7 @@
               :key="j"
             >{{game.resultsList.find(s => s.participantId === participant.id).score}}</td>
             <th>
-              <span @click="toEditResult(game)">✏️</span>
+              <span @click="toInputGame(game)">✏️</span>
               /
               <span @click="deleteGame(game)">🗑</span>
             </th>
@@ -54,44 +53,12 @@
         </tbody>
         <tfoot v-if="games.length > 0 || tip">
           <tr class="totalRow">
-            <th></th>
+            <th>合計</th>
             <td v-for="(totalResult, i) in calcTotalResults()" :key="i">{{totalResult.valueOf()}}</td>
             <th></th>
           </tr>
         </tfoot>
       </table>
-    </div>
-
-    <div v-if="viewMode === 'form'">
-      <div class="nav">
-        <span @click="cancel()">❌</span>
-        <span v-if="isInputTip">Input Tip</span>
-      </div>
-      <table class="formTable">
-        <thead>
-          <th>Name</th>
-          <th>Result</th>
-        </thead>
-        <tbody>
-          <tr v-for="(inputResult, i) in inputResults" :key="i">
-            <td>{{participants[i].name}}</td>
-            <td>
-              <span v-if="inputResult === 'top'">
-                <input type="text" disabled v-bind:value="topResult()">
-              </span>
-              <span v-if="inputResult !== 'top'">
-                <input v-model="inputResults[i]" v-on:input="onInputResult()" type="text">
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="btns">
-        <tm-button
-          @click="save()"
-          class="Form-button"
-          :kind="isValidInput() ? 'primary' : 'disabled'">決定</tm-button>
-      </div>
     </div>
   </main>
 </template>
@@ -109,14 +76,9 @@ export default {
   data() {
     return {
       token: null,
-      title: '',
-      viewMode: 'list',
       participants: [],
       games: [],
-      tip: null,
-      inputResults: [],
-      updateGame: null,
-      isInputTip: false
+      tip: null
     };
   },
   async asyncData({ params, error }) {
@@ -132,8 +94,7 @@ export default {
       token: event.token,
       participants: event.participantsList,
       games: event.gamesList,
-      tip: event.tip,
-      inputResults: event.participantsList.map(() => null)
+      tip: event.tip
     };
   },
   methods: {
@@ -159,117 +120,24 @@ export default {
       }
       return total;
     },
-    toNewResult() {
-      this.switchViewTo('form');
+    toInputGame(game) {
+      const query = game ? `?game_id=${game.id}` : '';
+      this.$router.push(`/events/${this.token}/input${query}`);
     },
-    toTip() {
-      this.switchViewTo('form');
-      this.isInputTip = true;
-    },
-    toEditResult(game) {
-      this.switchViewTo('form');
-      this.updateGame = game;
-      const topResult = Math.max(...game.resultsList.map(s => s.score));
-      this.inputResults = this.participants.map(participant => {
-        const result = game.resultsList.find(s => s.participantId === participant.id);
-        return result.score === topResult ? 'top' : result.score;
-      });
-    },
-    toEditTip() {
-      this.switchViewTo('form');
-      this.isInputTip = true;
-      const topResult = Math.max(...this.tip.resultsList.map(s => s.score));
-      this.inputResults = this.participants.map(participant => {
-        const result = this.tip.resultsList.find(s => s.participantId === participant.id);
-        return result.score === topResult ? 'top' : result.score;
-      });
-    },
-    switchViewTo(view) {
-      this.inputResults = this.participants.map(() => null);
-      this.updateGame = null;
-      this.isInputTip = false;
-      this.viewMode = view;
-    },
-    async save() {
-      if (!this.isValidInput()) return console.error('Invalid input');
-
-      const results = this.inputResults.map((result, i) => {
-        const score = result === 'top' ? this.topResult() : Number(result);
-        return { participantId: this.participants[i].id, score };
-      });
-
-      if (this.isInputTip) {
-        const [err] = await client.postTip({ token: this.token, results });
-        if (err) return alertError(err);
-        this.tip = { resultsList: results };
-      } else if (this.updateGame) {
-        const game = this.games.find(g => g.id === this.updateGame.id);
-        const [err] = await client.updateGame({ token: this.token, gameId: game.id, results });
-        if (err) return alertError(err);
-        game.resultsList = results;
-      } else {
-        const [err, game] = await client.createGame({ token: this.token, results });
-        if (err) return alertError(err);
-        this.games.push({ id: game.id, resultsList: results });
-      }
-
-      this.switchViewTo('list');
-    },
-    cancel() {
-      this.switchViewTo('list');
-    },
-    onInputResult() {
-      // 'top'という値は入力されていないとみなす
-      // 0 は入力されているとみなす
-      const isExistResult = result => result === 0 || (result && result !== 'top');
-
-      // 入力されているフィールドの値だけを抽出
-      const existingResults = this.inputResults.filter(isExistResult);
-
-      if (existingResults.length < 3) {
-        // 入力が3未満の場合はまだ不完全
-        // 全部入力済みの状態でどこかが消された場合は'top'がある状態でここにくるので'top'をnullに戻す
-        this.inputResults = this.inputResults.map(s => (isExistResult(s) ? s : null));
-      } else if (existingResults.length === 3) {
-        // 入力が3以上の場合はトップ以外入力済み
-        this.inputResults = this.inputResults.map(s => (s === 0 || s ? s : 'top'));
-      } else {
-        throw new Error('Invalid input');
-      }
-    },
-    async reload() {
-      const [err, event] = await client.getEvent(this.token);
-      if (err) return alertError(err);
-      this.participants = event.participantsList;
-      this.games = event.gamesList;
-      this.tip = event.tip;
-      this.inputResults = event.participantsList.map(() => null);
+    toInputTip() {
+      this.$router.push(`/events/${this.token}/input?type=tip`);
     },
     async deleteGame(game) {
       if (!window.confirm('削除します。よろしいですか？')) return;
       const [err] = await client.deleteGame({ token: this.token, gameId: game.id });
       if (err) return alertError(err);
-      await this.reload();
+      this.games = this.games.filter(g => g.id !== game.id);
     },
     async deleteTip() {
       if (!window.confirm('削除します。よろしいですか？')) return;
       const [err] = await client.deleteTip({ token: this.token });
       if (err) return alertError(err);
-      await this.reload();
-    },
-    topResult() {
-      const amount = this.inputResults.map(s => Number(s) || 0).reduce((acc, v) => acc.plus(v), new Big(0));
-      return amount < 0 ? -amount : null;
-    },
-    isValidInput() {
-      const existingResults = this.inputResults.filter(s => s === 0 || (s && s !== 'top'));
-      if (existingResults.length !== 3) return false;
-
-      const topResult = this.topResult();
-      const secondResult = Math.max(...existingResults.map(Number));
-
-      // 1位より2位のほうが点数が大きい場合はinvalid
-      return topResult && topResult > secondResult;
+      this.tip = null;
     }
   }
 };
@@ -288,11 +156,18 @@ export default {
   max-width: 640px;
 }
 
+.header-inner h1 {
+  text-align: center;
+}
+
 .back {
   font-size: 16px;
   font-weight: bold;
   color: inherit;
   text-decoration: none;
+  position: absolute;
+  left: 10px;
+  top: 16px;
 }
 
 .body {

@@ -120,7 +120,7 @@ export default {
 .Button.-disabled {
   border: 2px solid #f2eeec;
   background-color: #f2eeec;
-  color: #8a8989;
+  color: #d6d1d1;
   pointer-events: none;
 }
 </style>
