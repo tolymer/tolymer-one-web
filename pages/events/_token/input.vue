@@ -8,19 +8,15 @@
     </header>
     <div class="body">
       <table class="FormTable">
-        <thead>
-          <th>名前</th>
-          <th>スコア</th>
-        </thead>
         <tbody>
           <tr v-for="(inputResult, i) in inputResults" :key="i">
             <td>{{participants[i].name}}</td>
             <td>
               <span v-if="inputResult === 'top'">
-                <input type="text" disabled v-bind:value="topResult()">
+                <input type="number" disabled :value="topResult()">
               </span>
               <span v-if="inputResult !== 'top'">
-                <input v-model="inputResults[i]" v-on:input="onInputResult()" type="text">
+                <input type="number" v-model="inputResults[i]" @input="onInputResult()">
               </span>
             </td>
           </tr>
@@ -30,7 +26,8 @@
         <tm-button
           @click="save()"
           class="Form-button"
-          :kind="isValidInput() ? 'primary' : 'disabled'">決定</tm-button>
+          :kind="isValidInput() ? 'primary' : 'disabled'"
+        >決定</tm-button>
       </div>
     </div>
   </main>
@@ -83,11 +80,11 @@ export default {
     };
 
     if (isTipInput && event.tip) {
-      data.inputResult = calcInputResult({ participants: data.participants, resultsList: event.tip.resultsList });
+      data.inputResults = calcInputResult({ participants: data.participants, resultsList: event.tip.resultsList });
     } else if (gameId) {
       const game = event.gamesList.find(g => g.id === Number(gameId));
       if (game) {
-        data.inputResult = calcInputResult({ participants: data.participants, resultsList: game.resultsList });
+        data.inputResults = calcInputResult({ participants: data.participants, resultsList: game.resultsList });
       }
     }
 
@@ -136,7 +133,7 @@ export default {
       if (existingResults.length < 3) {
         // 入力が3未満の場合はまだ不完全
         // 全部入力済みの状態でどこかが消された場合は'top'がある状態でここにくるので'top'をnullに戻す
-        this.inputResults = this.inputResults.map(s => (isExistResult(s) ? s : null));
+        this.inputResults = this.inputResults.map(s => (s === 'top' ? null : s));
       } else if (existingResults.length === 3) {
         // 入力が3以上の場合はトップ以外入力済み
         this.inputResults = this.inputResults.map(s => (s === 0 || s ? s : 'top'));
@@ -201,25 +198,25 @@ export default {
   padding: 30px 10px 0 10px;
 }
 
-.FormTable input[type='text'] {
+.FormTable input[type='number'] {
   border: none;
   border-bottom: 1px solid #999;
   width: 80px;
-  font-size: 20px;
+  font-size: 24px;
   outline: none;
   text-align: right;
   padding: 3px 10px;
   border-radius: 0;
   -webkit-appearance: none;
   color: #333;
+  background-color: transparent;
 }
 
-.FormTable input[type='text'][disabled] {
-  background-color: #fff566;
-  color: #333;
-  -webkit-text-fill-color: #333;
+.FormTable input[type='number'][disabled] {
+  color: #2b9018;
+  -webkit-text-fill-color: #2b9018;
+  font-weight: bold;
   opacity: 1;
-  border-bottom: none;
 }
 
 .btns {
