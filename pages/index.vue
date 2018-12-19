@@ -3,34 +3,35 @@
     <div class="sticks"/>
     <h1 class="appname">tolymer</h1>
     <div class="Form">
-      <div class="Form-item">
-        <tm-input
-          v-model="participants"
-          type="textarea"
-          :rows=4
-          :cols=40
-          label="参加者（必須）"
-          placeholder="すずきさん
-さとうくん
-たなかさん
-きむらくん"/>
-      </div>
-      <div class="Form-item">
+      <h3>参加者（必須）</h3>
+      <ul>
+        <li>
+          <tm-input type="text" v-model="participants[0]" placeholder="例: ほかむら"/>
+        </li>
+        <li>
+          <tm-input type="text" v-model="participants[1]" placeholder="例: たに"/>
+        </li>
+        <li>
+          <tm-input type="text" v-model="participants[2]" placeholder="例: せんすい"/>
+        </li>
+        <li>
+          <tm-input type="text" v-model="participants[3]" placeholder="例: たなか"/>
+        </li>
+      </ul>
+      <div class="Form-item" style="margin-top: 30px">
         <tm-input
           v-model="description"
           type="textarea"
-          :rows=5
-          :cols=40
+          :rows="5"
+          :cols="40"
           label="概要"
           placeholder="例）
 場所: 渋谷 Zoo
-日程: 2018/12/10"/>
+日程: 2018/12/10"
+        />
       </div>
       <div class="Form-action">
-        <tm-button
-          @click="submit()"
-          class="Form-button"
-          kind="primary">イベント作成</tm-button>
+        <tm-button @click="submit()" class="Form-button" kind="primary">イベント作成</tm-button>
       </div>
     </div>
   </main>
@@ -50,20 +51,20 @@ export default {
   data() {
     return {
       description: '',
-      participants: ''
+      participants: []
     };
   },
   methods: {
     async submit() {
       const [err, event] = await createEvent({
         description: this.description,
-        participants: this.participants.split('\n')
+        participants: this.participants
       });
 
       if (err) {
         alertError(err);
       } else {
-        this.$router.push(`/events/${event.token}`);
+        this.$router.push(`/events/${event.token}/table`);
       }
     }
   }

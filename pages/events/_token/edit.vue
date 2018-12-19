@@ -2,35 +2,35 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <nuxt-link class="back" :to="`/events/${token}`">＜</nuxt-link>
+        <h1>イベント情報変更</h1>
+        <nuxt-link :to="`/events/${token}/info`" class="tm-iconLink back">
+          <i class="fas fa-angle-left"></i>
+        </nuxt-link>
       </div>
     </header>
 
     <div class="body">
       <div class="Form">
-        <div class="Form-item">
-          <tm-input
-            v-model="description"
-            type="textarea"
-            :rows=5
-            :cols=40
-            label="概要"
-            placeholder="例）
-  場所: 渋谷 Zoo
-  日程: 2018/12/10"/>
-        </div>
-
         <h3>参加者</h3>
         <ul>
           <li v-for="(participant, i) in participants" :key="i">
-            <tm-input type="text" v-model="participant.name" />
+            <tm-input type="text" v-model="participant.name"/>
           </li>
         </ul>
+        <div class="Form-item" style="margin-top: 25px">
+          <tm-input
+            v-model="description"
+            type="textarea"
+            :rows="5"
+            :cols="40"
+            label="概要"
+            placeholder="例）
+  場所: 渋谷 Zoo
+  日程: 2018/12/10"
+          />
+        </div>
         <div class="Form-action">
-          <tm-button
-            @click="submit()"
-            class="Form-button"
-            kind="primary">変更</tm-button>
+          <tm-button @click="submit()" class="Form-button" kind="primary">変更</tm-button>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@ export default {
       const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });
       if (err2) return alertError(err2);
 
-      this.$router.push(`/events/${this.token}`);
+      this.$router.push(`/events/${this.token}/info`);
     }
   }
 };
@@ -90,11 +90,30 @@ export default {
   max-width: 640px;
 }
 
-.back {
-  font-size: 16px;
-  font-weight: bold;
+.header-inner h1 {
+  text-align: center;
+}
+
+.tm-iconLink {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid transparent;
+  border-radius: 100em;
+  background-color: transparent;
   color: inherit;
   text-decoration: none;
+  transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  will-change: border-color, box-shadow;
+}
+
+.back {
+  position: absolute;
+  font-size: 24px;
+  left: 0px;
+  top: 0px;
 }
 
 .body {

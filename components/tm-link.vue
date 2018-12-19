@@ -1,11 +1,6 @@
 <template>
-  <nuxt-link
-    :to="to"
-    :appearance="appearance"
-    :kind="kind"
-    :class="[a,k]"
-    class="Link">
-    <slot />
+  <nuxt-link :to="to" :appearance="appearance" :kind="kind" :class="[a,k]" class="Link">
+    <slot/>
   </nuxt-link>
 </template>
 
@@ -67,24 +62,23 @@ export default {
 }
 
 .Link.-button:focus {
-  outline:none
+  outline: none;
 }
 
 .Link.-button.-normal {
   border: 2px solid #f2eeec;
   background-color: #f2eeec;
-  color: #2E282A;
+  color: #2e282a;
 }
 
 .Link.-button.-normal:hover {
-  border-color: #;
 }
 
 .Link.-button.-normal:active {
 }
 
 .Link.-button.-normal:focus {
-  border-color: #D3CCC9;
+  border-color: #d3ccc9;
   box-shadow: 0 0 0 3px #5dc0f6;
 }
 

@@ -2,8 +2,18 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <nuxt-link class="back" :to="`/events/${token}/results`">＜</nuxt-link>
         <h1>{{ isTipInput ? 'チップ' : 'スコア'}}入力</h1>
+        <nuxt-link :to="`/events/${token}/table`" class="tm-iconLink back">
+          <i class="fas fa-angle-left"></i>
+        </nuxt-link>
+        <nuxt-link
+          v-if="!isTipInput && !isUpdate"
+          class="tm-iconLink tip"
+          :to="`/events/${token}/input?type=tip`"
+        >Tip</nuxt-link>
+        <span v-if="isUpdate" class="tm-iconLink remove" @click="remove()">
+          <i class="far fa-trash-alt"></i>
+        </span>
       </div>
     </header>
     <div class="body">
@@ -43,13 +53,15 @@ export default {
   components: {
     tmButton
   },
+  watchQuery: ['type'],
   data() {
     return {
       token: null,
       participants: [],
       inputResults: [],
       isTipInput: false,
-      gameId: null
+      gameId: null,
+      isUpdate: false
     };
   },
   async asyncData({ params, query, error }) {
@@ -68,7 +80,8 @@ export default {
       participants: event.participantsList,
       inputResults: event.participantsList.map(() => null),
       isTipInput,
-      gameId
+      gameId,
+      isUpdate: false
     };
 
     const calcInputResult = ({ participants, resultsList }) => {
@@ -81,10 +94,12 @@ export default {
 
     if (isTipInput && event.tip) {
       data.inputResults = calcInputResult({ participants: data.participants, resultsList: event.tip.resultsList });
+      data.isUpdate = true;
     } else if (gameId) {
       const game = event.gamesList.find(g => g.id === Number(gameId));
       if (game) {
         data.inputResults = calcInputResult({ participants: data.participants, resultsList: game.resultsList });
+        data.isUpdate = true;
       }
     }
 
@@ -110,7 +125,7 @@ export default {
         if (err) return alertError(err);
       }
 
-      this.$router.push(`/events/${this.token}/results`);
+      this.$router.push(`/events/${this.token}/table`);
     },
     isValidInput() {
       const existingResults = this.inputResults.filter(s => s === 0 || (s && s !== 'top'));
@@ -144,6 +159,19 @@ export default {
     topResult() {
       const amount = this.inputResults.map(s => Number(s) || 0).reduce((acc, v) => acc.plus(v), new Big(0));
       return amount < 0 ? -amount : null;
+    },
+    async remove() {
+      if (!window.confirm('削除します。よろしいですか？')) return;
+      if (this.gameId) {
+        const [err] = await client.deleteGame({ token: this.token, gameId: this.gameId });
+        if (err) return alertError(err);
+      } else if (this.isTipInput) {
+        const [err] = await client.deleteTip({ token: this.token });
+        if (err) return alertError(err);
+      } else {
+        throw new Error('Invalid input');
+      }
+      this.$router.push(`/events/${this.token}/table`);
     }
   }
 };
@@ -166,14 +194,41 @@ export default {
   text-align: center;
 }
 
-.back {
-  font-size: 16px;
-  font-weight: bold;
+.tm-iconLink {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid transparent;
+  border-radius: 100em;
+  background-color: transparent;
   color: inherit;
   text-decoration: none;
+  transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  will-change: border-color, box-shadow;
+}
+
+.back {
   position: absolute;
-  left: 10px;
-  top: 16px;
+  font-size: 24px;
+  left: 0px;
+  top: 0px;
+}
+
+.remove {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 16px;
+  color: #d21b1b;
+}
+
+.tip {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 18px;
 }
 
 .body {

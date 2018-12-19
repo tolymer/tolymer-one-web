@@ -2,13 +2,13 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1 class="title">Tolymer</h1>
-        <div class="edit">
-          <nuxt-link
-            :to="`/events/${token}/edit`"
-            class="edit-tm-iconLink">編集</nuxt-link>
-          <!-- FIXME: @hiloki 編集ボタンをアイコンリンクにする -->
-        </div>
+        <h1>イベント情報</h1>
+        <nuxt-link :to="`/events/${token}/table`" class="tm-iconLink back">
+          <i class="fas fa-angle-left"></i>
+        </nuxt-link>
+        <nuxt-link :to="`/events/${token}/edit`" class="tm-iconLink edit">
+          <i class="fas fa-edit"></i>
+        </nuxt-link>
       </div>
     </header>
     <div class="body">
@@ -17,25 +17,14 @@
       <ul class="participant">
         <li v-for="(partipant, i) in participants" :key="i">{{ partipant.name }}</li>
       </ul>
-      <div class="action">
-        <tm-link
-          :to="`/events/${token}/results`"
-          appearance="button"
-          kind="primary"
-          class="inputResult">点数表</tm-link>
-      </div>
     </div>
   </main>
 </template>
 
 <script>
-import tmLink from '../../../components/tm-link';
 import { getEvent } from '../../../lib/TolymerGrpcClient';
 
 export default {
-  components: {
-    tmLink
-  },
   async asyncData({ params, error }) {
     const token = params.token;
     const [err, event] = await getEvent(token);
@@ -67,22 +56,11 @@ export default {
   max-width: 640px;
 }
 
-.title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 52px;
-  font-size: 24px;
-  font-weight: bold;
+.header-inner h1 {
+  text-align: center;
 }
 
-.edit {
-  position: absolute;
-  right: 8px;
-  bottom: 4px;
-}
-
-.edit-tm-iconLink {
+.tm-iconLink {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -95,6 +73,20 @@ export default {
   text-decoration: none;
   transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
   will-change: border-color, box-shadow;
+}
+
+.back {
+  position: absolute;
+  font-size: 24px;
+  left: 0px;
+  top: 0px;
+}
+
+.edit {
+  position: absolute;
+  font-size: 16px;
+  right: 0px;
+  top: 0px;
 }
 
 .body {
