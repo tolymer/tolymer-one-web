@@ -2,7 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1>スコア一覧</h1>
+        <h1>スコア表</h1>
         <div class="dropdown">
           <span class="menuBtn" @click.stop="showMenu = !showMenu">
             <i class="fas fa-bars"></i>
@@ -24,7 +24,7 @@
     </header>
 
     <div class="body">
-      <table class="resultTable" v-if="games.length || tip">
+      <table class="resultTable">
         <thead>
           <tr>
             <th class="gameNumberCol"></th>
@@ -32,6 +32,10 @@
           </tr>
         </thead>
         <tbody>
+          <tr v-if="!games.length && !tip" aria-hidden="true">
+            <td class="gameNumberCol"></td>
+            <td v-for="i in participants" :key="i">-</td>
+          </tr>
           <tr v-for="(game, i) in games" :key="i">
             <th class="gameNumberCol">
               <nuxt-link :to="`/events/${token}/input?game_id=${game.id}`">{{ i + 1 }}</nuxt-link>
@@ -230,6 +234,10 @@ export default {
   margin-left: auto;
   margin-right: auto;
   max-width: 640px;
+}
+
+.resultTable thead {
+  border-bottom: 1px solid #999;
 }
 
 .resultTable td,
