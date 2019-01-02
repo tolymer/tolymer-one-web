@@ -24,7 +24,7 @@
     </header>
 
     <div class="body">
-      <table class="resultTable" v-if="games.length || tip">
+      <table class="resultTable">
         <thead>
           <tr>
             <th class="gameNumberCol"></th>
@@ -230,6 +230,10 @@ export default {
   margin-left: auto;
   margin-right: auto;
   max-width: 640px;
+}
+
+.resultTable thead {
+  border-bottom: 1px solid #999;
 }
 
 .resultTable td,
