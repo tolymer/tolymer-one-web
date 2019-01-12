@@ -1,9 +1,9 @@
-module.exports = {
+export default {
   mode: 'spa',
   dev: process.env.NODE_ENV !== 'production',
   /*
-  ** Headers of the page
-  */
+   ** Headers of the page
+   */
   head: {
     title: 'tolymer-guest-web',
     meta: [
@@ -17,20 +17,37 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://use.fontawesome.com/releases/v5.6.1/css/all.css' }
     ]
   },
+
   /*
-  ** Customize the progress bar color
-  */
+   ** Customize the progress bar color
+   */
   loading: { color: '#3B8070' },
+
   /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   css: [{ src: 'normalize.css' }],
+
+  /*
+   ** Plugins to load before mounting the App
+   */
+  plugins: [],
+
+  /*
+   ** Nuxt.js modules
+   */
+  modules: [],
+
+  /*
+   ** Build configuration
+   */
   build: {
     /*
-    ** Run ESLint on save
-    */
-    extend(config, { isDev, isClient }) {
-      if (isDev && isClient) {
+     ** You can extend webpack config here
+     */
+    extend(config, ctx) {
+      // Run ESLint on save
+      if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -38,9 +55,6 @@ module.exports = {
           exclude: /(node_modules)/
         });
       }
-    },
-    babel: {
-      plugins: ['transform-es2015-modules-commonjs']
     }
   }
 };

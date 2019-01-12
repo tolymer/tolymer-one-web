@@ -78,7 +78,7 @@ export default {
   margin-bottom: 24px;
   width: 313px;
   height: 120px;
-  background-image: url('/static/sticks.svg');
+  background-image: url('/sticks.svg');
   background-size: 313px 214px;
   background-position: center bottom;
 }

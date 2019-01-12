@@ -11,7 +11,7 @@ const kinds = ['normal', 'primary'];
 export default {
   props: {
     to: {
-      type: String | Location,
+      type: [String, Location],
       default: ''
     },
     appearance: {
