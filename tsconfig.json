@@ -13,7 +13,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "allowJs": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]

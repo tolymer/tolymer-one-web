@@ -19,20 +19,25 @@ import config from '~/nuxt.config';
 const host = config.dev ? 'http://localhost:8080' : 'https://grpc.tolymer.com';
 const client = new EventsClient(host, null, null);
 
+interface GrpcErrorParams {
+  code: number;
+  message: string;
+}
+
 export class GrpcError {
   code: number;
   message: string;
 
-  constructor({ code, message }) {
+  constructor({ code, message }: GrpcErrorParams) {
     this.code = code;
     this.message = message;
   }
 
-  isNotFound() {
+  isNotFound(): boolean {
     return this.code === grpc.StatusCode.NOT_FOUND;
   }
 
-  toString() {
+  toString(): string {
     return `GrpcError: ${this.message}`;
   }
 }
