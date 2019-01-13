@@ -39,8 +39,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import tmInput from '~/components/tm-input';
-import tmButton from '~/components/tm-button';
+import tmInput from '~/components/tm-input.vue';
+import tmButton from '~/components/tm-button.vue';
 import { getEvent, updateEvent, updateParticipants } from '~/lib/TolymerGrpcClient';
 import { alertError } from '~/lib/errorHandler';
 

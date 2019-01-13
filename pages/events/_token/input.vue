@@ -46,7 +46,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Big from 'big.js';
-import tmButton from '~/components/tm-button';
+import tmButton from '~/components/tm-button.vue';
 import * as client from '~/lib/TolymerGrpcClient';
 import { alertError } from '~/lib/errorHandler';
 
