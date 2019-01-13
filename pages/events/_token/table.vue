@@ -76,12 +76,13 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Big from 'big.js';
 import tmLink from '../../../components/tm-link';
 import * as client from '../../../lib/TolymerGrpcClient';
 import { alertError } from '../../../lib/errorHandler';
 
-export default {
+export default Vue.extend({
   components: {
     tmLink
   },
@@ -159,7 +160,7 @@ export default {
       }
     }
   }
-};
+});
 </script>
 
 <style scoped>

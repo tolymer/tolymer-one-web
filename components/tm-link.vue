@@ -4,11 +4,12 @@
   </nuxt-link>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 const appearances = ['text', 'button'];
 const kinds = ['normal', 'primary'];
 
-export default {
+export default Vue.extend({
   props: {
     to: {
       type: [String, Location],
@@ -17,23 +18,23 @@ export default {
     appearance: {
       type: String,
       default: 'text',
-      validator: a => appearances.indexOf(a) !== -1
+      validator: (a: string) => appearances.indexOf(a) !== -1
     },
     kind: {
       type: String,
       default: 'normal',
-      validator: k => kinds.indexOf(k) !== -1
+      validator: (k: string) => kinds.indexOf(k) !== -1
     }
   },
   computed: {
-    a() {
+    a(): string {
       return `-${this.appearance}`;
     },
-    k() {
+    k(): string {
       return `-${this.kind}`;
     }
   }
-};
+});
 </script>
 
 <style scoped>

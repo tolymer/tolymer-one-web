@@ -21,7 +21,7 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
 import { getEvent } from '../../../lib/TolymerGrpcClient';
 
 export default {

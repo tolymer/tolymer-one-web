@@ -1,8 +1,6 @@
 <template>
   <label class="Input">
-    <p class="Input-label">
-      {{ label }}
-    </p>
+    <p class="Input-label">{{ label }}</p>
     <input
       v-if="type !== 'textarea'"
       :type="type"
@@ -13,7 +11,8 @@
       :disabled="disabled"
       :readonly="readonly"
       class="Input-field"
-      @input="onInput">
+      @input="onInput"
+    >
     <textarea
       v-if="type === 'textarea'"
       :value="value"
@@ -26,19 +25,21 @@
       :readonly="readonly"
       :resize="resize"
       class="Input-field"
-      @input="onInput"></textarea>
+      @input="onInput"
+    ></textarea>
   </label>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 const types = ['text', 'search', 'email', 'date', 'password', 'textarea'];
 
-export default {
+export default Vue.extend({
   props: {
     type: {
       type: String,
       default: 'text',
-      validator: t => types.indexOf(t) !== -1
+      validator: (t: string) => types.indexOf(t) !== -1
     },
     label: {
       type: String,
@@ -86,11 +87,11 @@ export default {
     }
   },
   methods: {
-    onInput(e) {
+    onInput(e: any) {
       this.$emit('input', e.target.value);
     }
   }
-};
+});
 </script>
 
 <style>

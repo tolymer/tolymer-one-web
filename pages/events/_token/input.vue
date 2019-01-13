@@ -43,13 +43,14 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import Big from 'big.js';
-import tmButton from '../../../components/tm-button';
-import * as client from '../../../lib/TolymerGrpcClient';
-import { alertError } from '../../../lib/errorHandler';
+import tmButton from '~/components/tm-button';
+import * as client from '~/lib/TolymerGrpcClient';
+import { alertError } from '~/lib/errorHandler';
 
-export default {
+export default Vue.extend({
   components: {
     tmButton
   },
@@ -106,12 +107,13 @@ export default {
     return data;
   },
   methods: {
-    async save() {
+    async save(): Promise<void> {
       if (!this.isValidInput()) return console.error('Invalid input');
 
       const results = this.inputResults.map((result, i) => {
         const score = result === 'top' ? this.topResult() : Number(result);
-        return { participantId: this.participants[i].id, score };
+        const participant: any = this.participants[i];
+        return { participantId: participant.id, score };
       });
 
       if (this.isTipInput) {
@@ -127,7 +129,7 @@ export default {
 
       this.$router.push(`/events/${this.token}/table`);
     },
-    isValidInput() {
+    isValidInput(): boolean {
       const existingResults = this.inputResults.filter(s => s === 0 || (s && s !== 'top'));
       if (existingResults.length !== 3) return false;
 
@@ -135,9 +137,9 @@ export default {
       const secondResult = Math.max(...existingResults.map(Number));
 
       // 1位より2位のほうが点数が大きい場合はinvalid
-      return topResult && topResult > secondResult;
+      return topResult !== null && topResult > secondResult;
     },
-    onInputResult() {
+    onInputResult(): void {
       // 'top'という値は入力されていないとみなす
       // 0 は入力されているとみなす
       const isExistResult = result => result === 0 || (result && result !== 'top');
@@ -148,19 +150,19 @@ export default {
       if (existingResults.length < 3) {
         // 入力が3未満の場合はまだ不完全
         // 全部入力済みの状態でどこかが消された場合は'top'がある状態でここにくるので'top'をnullに戻す
-        this.inputResults = this.inputResults.map(s => (s === 'top' ? null : s));
+        this.inputResults = this.inputResults.map(s => (s === 'top' ? null : s)) as any;
       } else if (existingResults.length === 3) {
         // 入力が3以上の場合はトップ以外入力済み
-        this.inputResults = this.inputResults.map(s => (s === 0 || s ? s : 'top'));
+        this.inputResults = this.inputResults.map(s => (s === 0 || s ? s : 'top')) as any;
       } else {
         throw new Error('Invalid input');
       }
     },
-    topResult() {
+    topResult(): number | null {
       const amount = this.inputResults.map(s => Number(s) || 0).reduce((acc, v) => acc.plus(v), new Big(0));
       return amount < 0 ? -amount : null;
     },
-    async remove() {
+    async remove(): Promise<void> {
       if (!window.confirm('削除します。よろしいですか？')) return;
       if (this.gameId) {
         const [err] = await client.deleteGame({ token: this.token, gameId: this.gameId });
@@ -174,7 +176,7 @@ export default {
       this.$router.push(`/events/${this.token}/table`);
     }
   }
-};
+});
 </script>
 
 <style scoped>

@@ -37,16 +37,24 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import tmInput from '../../../components/tm-input';
 import tmButton from '../../../components/tm-button';
-import { getEvent, updateEvent, updateParticipants, GrpcError } from '../../../lib/TolymerGrpcClient';
+import { getEvent, updateEvent, updateParticipants } from '../../../lib/TolymerGrpcClient';
 import { alertError } from '../../../lib/errorHandler';
 
-export default {
+export default Vue.extend({
   components: {
     tmInput,
     tmButton
+  },
+  data() {
+    return {
+      token: '',
+      description: '',
+      participants: []
+    };
   },
   async asyncData({ params, error }) {
     const token = params.token;
@@ -64,7 +72,7 @@ export default {
     };
   },
   methods: {
-    async submit() {
+    async submit(): Promise<void> {
       const [err1] = await updateEvent({ token: this.token, description: this.description });
       if (err1) return alertError(err1);
 
@@ -74,7 +82,7 @@ export default {
       this.$router.push(`/events/${this.token}/info`);
     }
   }
-};
+});
 </script>
 
 <style scoped>

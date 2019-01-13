@@ -5,50 +5,52 @@
     :kind="kind"
     :class="[a,k]"
     class="Button"
-    @click="onClick">
-    <slot />
+    @click="onClick"
+  >
+    <slot/>
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 const appearances = ['text', 'button'];
 const types = ['button', 'submit'];
 const kinds = ['normal', 'primary', 'disabled'];
 
-export default {
+export default Vue.extend({
   props: {
     type: {
       type: String,
       default: 'button',
-      validator: t => types.indexOf(t) !== -1
+      validator: (t: string) => types.indexOf(t) !== -1
     },
     appearance: {
       type: String,
       default: 'button',
-      validator: a => appearances.indexOf(a) !== -1
+      validator: (a: string) => appearances.indexOf(a) !== -1
     },
     kind: {
       type: String,
       default: 'normal',
-      validator: k => kinds.indexOf(k) !== -1
+      validator: (k: string) => kinds.indexOf(k) !== -1
     }
   },
   computed: {
-    a() {
+    a(): string {
       return `-${this.appearance}`;
     },
-    k() {
+    k(): string {
       return `-${this.kind}`;
     }
   },
   methods: {
-    onClick(e) {
+    onClick(e: any) {
       if (this.kind !== 'disabled') {
         this.$emit('click', e);
       }
     }
   }
-};
+});
 </script>
 
 <style scoped>
