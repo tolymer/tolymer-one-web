@@ -20,6 +20,9 @@ const host = config.dev ? 'http://localhost:8080' : 'https://grpc.tolymer.com';
 const client = new EventsClient(host, null, null);
 
 export class GrpcError {
+  code: number;
+  message: string;
+
   constructor({ code, message }) {
     this.code = code;
     this.message = message;
@@ -34,7 +37,7 @@ export class GrpcError {
   }
 }
 
-export function getEvent(token) {
+export function getEvent(token): Promise<any> {
   return new Promise(resolve => {
     const request = new GetEventRequest();
     request.setEventToken(token);
@@ -47,7 +50,7 @@ export function getEvent(token) {
   });
 }
 
-export function createEvent(params) {
+export function createEvent(params): Promise<any> {
   return new Promise(resolve => {
     const request = new CreateEventRequest();
     request.setDescription(params.description);
@@ -61,7 +64,7 @@ export function createEvent(params) {
   });
 }
 
-export function updateEvent(params) {
+export function updateEvent(params): Promise<any> {
   return new Promise(resolve => {
     const request = new UpdateEventRequest();
     request.setEventToken(params.token);
@@ -78,7 +81,7 @@ export function updateEvent(params) {
   });
 }
 
-export function updateParticipants(params) {
+export function updateParticipants(params): Promise<any> {
   return new Promise(resolve => {
     const request = new UpdateParticipantsRequest();
     const renamingParticipants = params.renamingParticipants.map(participant => {
@@ -97,7 +100,7 @@ export function updateParticipants(params) {
   });
 }
 
-export function createGame(params) {
+export function createGame(params): Promise<any> {
   return new Promise(resolve => {
     const request = new CreateGameRequest();
     request.setEventToken(params.token);
@@ -117,7 +120,7 @@ export function createGame(params) {
   });
 }
 
-export function updateGame(params) {
+export function updateGame(params): Promise<any> {
   return new Promise(resolve => {
     const request = new UpdateGameRequest();
     request.setEventToken(params.token);
@@ -140,7 +143,7 @@ export function updateGame(params) {
   });
 }
 
-export function deleteGame(params) {
+export function deleteGame(params): Promise<any> {
   return new Promise(resolve => {
     const request = new DeleteGameRequest();
     request.setEventToken(params.token);
@@ -153,7 +156,7 @@ export function deleteGame(params) {
   });
 }
 
-export function postTip(params) {
+export function postTip(params): Promise<any> {
   return new Promise(resolve => {
     const request = new PostTipRequest();
     request.setEventToken(params.token);
@@ -172,7 +175,7 @@ export function postTip(params) {
   });
 }
 
-export function deleteTip(params) {
+export function deleteTip(params): Promise<any> {
   return new Promise(resolve => {
     const request = new DeleteTipRequest();
     request.setEventToken(params.token);
