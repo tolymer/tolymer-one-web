@@ -34,7 +34,7 @@
         <tbody>
           <tr v-if="!games.length && !tip" aria-hidden="true">
             <td class="gameNumberCol"></td>
-            <td v-for="i in participants" :key="i">-</td>
+            <td v-for="(p, i) in participants" :key="i">-</td>
           </tr>
           <tr v-for="(game, i) in games" :key="i">
             <th class="gameNumberCol">
