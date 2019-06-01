@@ -2,42 +2,32 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1>{{ isTipInput ? 'チップ' : 'スコア'}}入力</h1>
+        <h1>{{ isTipInput ? 'チップ' : 'スコア' }}入力</h1>
         <nuxt-link :to="`/events/${token}/table`" class="tm-iconLink back">
           <i class="fas fa-angle-left"></i>
         </nuxt-link>
-        <nuxt-link
-          v-if="!isTipInput && !isUpdate"
-          class="tm-iconLink tip"
-          :to="`/events/${token}/input?type=tip`"
-        >Tip</nuxt-link>
-        <span v-if="isUpdate" class="tm-iconLink remove" @click="remove()">
-          <i class="far fa-trash-alt"></i>
-        </span>
+        <nuxt-link v-if="!isTipInput && !isUpdate" class="tm-iconLink tip" :to="`/events/${token}/input?type=tip`"
+          >Tip</nuxt-link
+        >
+        <span v-if="isUpdate" class="tm-iconLink remove" @click="remove()"> <i class="far fa-trash-alt"></i> </span>
       </div>
     </header>
     <div class="body">
       <table class="FormTable">
         <tbody>
           <tr v-for="(inputResult, i) in inputResults" :key="i">
-            <td>{{participants[i].name}}</td>
+            <td>{{ participants[i].name }}</td>
             <td>
-              <span v-if="inputResult === 'top'">
-                <input type="number" disabled :value="topResult()">
-              </span>
+              <span v-if="inputResult === 'top'"> <input type="number" disabled :value="topResult()" /> </span>
               <span v-if="inputResult !== 'top'">
-                <input type="number" v-model="inputResults[i]" @input="onInputResult()">
+                <input type="number" v-model="inputResults[i]" @input="onInputResult()" />
               </span>
             </td>
           </tr>
         </tbody>
       </table>
       <div class="btns">
-        <tm-button
-          @click="save()"
-          class="Form-button"
-          :kind="isValidInput() ? 'primary' : 'disabled'"
-        >決定</tm-button>
+        <tm-button @click="save()" class="Form-button" :kind="isValidInput() ? 'primary' : 'disabled'">決定</tm-button>
       </div>
     </div>
   </main>
@@ -137,7 +127,7 @@ export default Vue.extend({
       const secondResult = Math.max(...existingResults.map(Number));
 
       // 1位より2位のほうが点数が大きい場合はinvalid
-      return topResult !== null && topResult > secondResult;
+      return topResult !== null && topResult >= secondResult;
     },
     onInputResult(): void {
       // 'top'という値は入力されていないとみなす
