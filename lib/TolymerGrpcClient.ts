@@ -16,7 +16,7 @@ import grpc from 'grpc-web';
 import { EventsClient } from './tolymer_grpc_web_pb.js';
 import config from '~/nuxt.config';
 
-const host = config.dev ? 'http://localhost:8080' : 'https://grpc.tolymer.com';
+const host = config.dev ? 'http://localhost:8080' : 'https://tolymer-grpc.hokaccha.dev';
 const client = new EventsClient(host, null, null);
 
 interface GrpcErrorParams {
