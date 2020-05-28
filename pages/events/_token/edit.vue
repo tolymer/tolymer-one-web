@@ -14,7 +14,7 @@
         <h3>参加者</h3>
         <ul>
           <li v-for="(participant, i) in participants" :key="i">
-            <tm-input type="text" v-model="participant.name"/>
+            <tm-input type="text" v-model="participant.name" />
           </li>
         </ul>
         <div class="Form-item" style="margin-top: 25px">

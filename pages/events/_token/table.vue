@@ -9,14 +9,10 @@
           </span>
           <ul v-if="showMenu">
             <li>
-              <nuxt-link :to="`/events/${token}/info`">
-                <i class="fas fa-info-circle"></i> イベント情報
-              </nuxt-link>
+              <nuxt-link :to="`/events/${token}/info`"> <i class="fas fa-info-circle"></i> イベント情報 </nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/">
-                <i class="fas fa-plus-circle"></i> イベント作成
-              </nuxt-link>
+              <nuxt-link to="/"> <i class="fas fa-plus-circle"></i> イベント作成 </nuxt-link>
             </li>
           </ul>
         </div>
@@ -28,7 +24,7 @@
         <thead>
           <tr>
             <th class="gameNumberCol"></th>
-            <th v-for="(participant, i) in participants" :key="i">{{participant.name}}</th>
+            <th v-for="(participant, i) in participants" :key="i">{{ participant.name }}</th>
           </tr>
         </thead>
         <tbody>
@@ -40,31 +36,25 @@
             <th class="gameNumberCol">
               <nuxt-link :to="`/events/${token}/input?game_id=${game.id}`">{{ i + 1 }}</nuxt-link>
             </th>
-            <td
-              v-for="(score, j) in calcScores(game.resultsList)"
-              :key="j"
-              :class="getScoreColClass(score)"
-            >{{score}}</td>
+            <td v-for="(score, j) in calcScores(game.resultsList)" :key="j" :class="getScoreColClass(score)">
+              {{ score }}
+            </td>
           </tr>
           <tr v-if="tip" class="tipRow">
             <th class="gameNumberCol">
               <nuxt-link :to="`/events/${token}/input?type=tip`">T</nuxt-link>
             </th>
-            <td
-              v-for="(score, j) in calcScores(tip.resultsList)"
-              :key="j"
-              :class="getScoreColClass(score)"
-            >{{score}}</td>
+            <td v-for="(score, j) in calcScores(tip.resultsList)" :key="j" :class="getScoreColClass(score)">
+              {{ score }}
+            </td>
           </tr>
         </tbody>
         <tfoot v-if="games.length > 0 || tip">
           <tr class="totalRow">
             <th class="gameNumberCol"></th>
-            <td
-              v-for="(totalResult, i) in calcTotalResults()"
-              :key="i"
-              :class="getScoreColClass(totalResult)"
-            >{{totalResult}}</td>
+            <td v-for="(totalResult, i) in calcTotalResults()" :key="i" :class="getScoreColClass(totalResult)">
+              {{ totalResult }}
+            </td>
           </tr>
         </tfoot>
       </table>

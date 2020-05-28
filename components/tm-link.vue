@@ -1,6 +1,6 @@
 <template>
-  <nuxt-link :to="to" :appearance="appearance" :kind="kind" :class="[a,k]" class="Link">
-    <slot/>
+  <nuxt-link :to="to" :appearance="appearance" :kind="kind" :class="[a, k]" class="Link">
+    <slot />
   </nuxt-link>
 </template>
 
