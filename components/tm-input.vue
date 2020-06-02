@@ -12,7 +12,7 @@
       :readonly="readonly"
       class="Input-field"
       @input="onInput"
-    >
+    />
     <textarea
       v-if="type === 'textarea'"
       :value="value"

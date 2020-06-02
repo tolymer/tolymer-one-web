@@ -1,13 +1,6 @@
 <template>
-  <button
-    :type="type"
-    :appearance="appearance"
-    :kind="kind"
-    :class="[a,k]"
-    class="Button"
-    @click="onClick"
-  >
-    <slot/>
+  <button :type="type" :appearance="appearance" :kind="kind" :class="[a, k]" class="Button" @click="onClick">
+    <slot />
   </button>
 </template>
 
@@ -15,7 +8,7 @@
 import Vue from 'vue';
 const appearances = ['text', 'button'];
 const types = ['button', 'submit'];
-const kinds = ['normal', 'primary', 'disabled'];
+const kinds = ['normal', 'primary', 'modest', 'disabled'];
 
 export default Vue.extend({
   props: {
@@ -72,13 +65,12 @@ export default Vue.extend({
 }
 
 .Button.-button {
-  height: 48px;
-  padding: 0 16px;
+  padding: 0.75em 16px;
   border: 2px solid transparent;
   border-radius: 100em;
   background-color: transparent;
   text-align: center;
-  line-height: 48px;
+  line-height: 1.1;
   font-weight: bold;
   transition: border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
   will-change: border-color, box-shadow;
@@ -101,6 +93,7 @@ export default Vue.extend({
   border-color: #d3ccc9;
   box-shadow: 0 0 0 3px #5dc0f6;
 }
+
 .Button.-button.-primary {
   color: #2e282a;
   border: 2px solid #3de884;
@@ -111,10 +104,25 @@ export default Vue.extend({
   border-color: #099f47;
 }
 
-.Button.-button.-primary:active {
+.Button.-button.-primary:focus {
+  border-color: #099f47;
+  box-shadow: 0 0 0 3px #5dc0f6;
 }
 
-.Button.-button.-primary:focus {
+.Button.-button.-modest {
+  border-radius: 0;
+  padding: 0.5em 0;
+  color: #099f47;
+  border: 0;
+  background-color: transparent;
+  font-size: small;
+}
+
+.Button.-button.-modest:hover {
+  border: 0;
+}
+
+.Button.-button.-modest:focus {
   border-color: #099f47;
   box-shadow: 0 0 0 3px #5dc0f6;
 }

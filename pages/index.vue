@@ -1,21 +1,30 @@
 <template>
   <main>
-    <div class="sticks"/>
+    <div class="sticks" />
     <h1 class="appname">tolymer</h1>
-    <div class="Form">
-      <h3>参加者（必須）</h3>
+    <section class="Form participants">
+      <header class="participants__header">
+        <h3>参加者（必須）</h3>
+        <tm-button
+          v-if="this.previousParticipants"
+          @click="setPreviousParticipants()"
+          class="participants__headerButton"
+          kind="modest"
+          >前回の参加者を設定</tm-button
+        >
+      </header>
       <ul>
         <li>
-          <tm-input type="text" v-model="participants[0]" placeholder="例: ほかむら"/>
+          <tm-input type="text" v-model="participants[0]" placeholder="例: ほかむら" />
         </li>
         <li>
-          <tm-input type="text" v-model="participants[1]" placeholder="例: たに"/>
+          <tm-input type="text" v-model="participants[1]" placeholder="例: たに" />
         </li>
         <li>
-          <tm-input type="text" v-model="participants[2]" placeholder="例: せんすい"/>
+          <tm-input type="text" v-model="participants[2]" placeholder="例: せんすい" />
         </li>
         <li>
-          <tm-input type="text" v-model="participants[3]" placeholder="例: たなか"/>
+          <tm-input type="text" v-model="participants[3]" placeholder="例: たなか" />
         </li>
       </ul>
       <div class="Form-item" style="margin-top: 30px">
@@ -33,7 +42,7 @@
       <div class="Form-action">
         <tm-button @click="submit()" class="Form-button" kind="primary">イベント作成</tm-button>
       </div>
-    </div>
+    </section>
   </main>
 </template>
 
@@ -52,15 +61,45 @@ export default Vue.extend({
   data() {
     return {
       description: '',
-      participants: []
+      participants: [] as string[],
+      previousParticipants: [] as string[]
     };
   },
+  mounted: function() {
+    this.previousParticipants = this.canUseStorage()
+      ? (JSON.parse(localStorage.getItem('participants') || '') as string[])
+      : [];
+  },
   methods: {
+    canUseStorage() {
+      try {
+        const key = '__test__';
+        localStorage.setItem(key, key);
+        localStorage.removeItem(key);
+
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    setPreviousParticipants() {
+      if (this.previousParticipants) {
+        try {
+          this.participants = this.previousParticipants;
+        } catch (e) {
+          return false;
+        }
+      }
+    },
     async submit() {
       const [err, event] = await createEvent({
         description: this.description,
         participants: this.participants
       });
+
+      if (this.canUseStorage()) {
+        localStorage.setItem('participants', JSON.stringify(this.participants));
+      }
 
       if (err) {
         alertError(err);
@@ -109,5 +148,15 @@ export default Vue.extend({
 
 .Form-button {
   min-width: 240px;
+}
+
+.participants__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.participants__headerButton {
+  margin-bottom: -0.5em;
 }
 </style>
