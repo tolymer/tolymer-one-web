@@ -67,7 +67,7 @@ export default Vue.extend({
   },
   mounted: function() {
     this.previousParticipants = this.canUseStorage()
-      ? (JSON.parse(localStorage.getItem('participants') || '') as string[])
+      ? (JSON.parse(localStorage.getItem('participants') || '[]') as string[])
       : [];
   },
   methods: {
