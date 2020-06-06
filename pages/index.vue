@@ -66,9 +66,16 @@ export default Vue.extend({
     };
   },
   mounted: function() {
-    this.previousParticipants = this.canUseStorage()
-      ? (JSON.parse(localStorage.getItem('participants') || '') as string[])
-      : [];
+    this.previousParticipants = (() => {
+      if (this.canUseStorage() === false) return [];
+      const val = localStorage.getItem('participants') || '[]';
+      try {
+        return JSON.parse(val) as string[];
+      } catch (err) {
+        console.warn(`JSON parse Error: ${val}`);
+        return [];
+      }
+    })();
   },
   methods: {
     canUseStorage() {
