@@ -59,7 +59,6 @@ export function getEvent(token): Promise<any> {
 export function createEvent(params): Promise<any> {
   return new Promise(resolve => {
     const request = new CreateEventRequest();
-    request.setDescription(params.description);
     request.setEventDate(dateToProto(params.eventDate));
     request.setParticipantsList(params.participants);
 
@@ -76,9 +75,8 @@ export function updateEvent(params): Promise<any> {
     const request = new UpdateEventRequest();
     request.setEventToken(params.token);
     request.setEventDate(dateToProto(params.eventDate));
-    request.setDescription(params.description);
     const updateMask = new FieldMask();
-    updateMask.setPathsList(['description', 'event_date']);
+    updateMask.setPathsList(['event_date']);
     request.setUpdateMask(updateMask);
 
     client.updateEvent(request, {}, err => {
