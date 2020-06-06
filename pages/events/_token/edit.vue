@@ -17,6 +17,9 @@
             <tm-input type="text" v-model="participant.name" />
           </li>
         </ul>
+        <div class="Form-item" style="margin-top: 30px">
+          <tm-input v-model="eventDate" type="date" label="開催日" />
+        </div>
         <div class="Form-item" style="margin-top: 25px">
           <tm-input
             v-model="description"
@@ -43,6 +46,7 @@ import tmInput from '~/components/tm-input.vue';
 import tmButton from '~/components/tm-button.vue';
 import { getEvent, updateEvent, updateParticipants } from '~/lib/TolymerGrpcClient';
 import { alertError } from '~/lib/errorHandler';
+import { protoToDate } from '~/lib/ProtobufType';
 
 export default Vue.extend({
   components: {
@@ -52,6 +56,7 @@ export default Vue.extend({
   data() {
     return {
       token: '',
+      eventDate: '',
       description: '',
       participants: []
     };
@@ -67,13 +72,14 @@ export default Vue.extend({
 
     return {
       token: event.token,
+      eventDate: protoToDate(event.eventDate).format('YYYY-MM-DD'),
       description: event.description,
       participants: event.participantsList
     };
   },
   methods: {
     async submit(): Promise<void> {
-      const [err1] = await updateEvent({ token: this.token, description: this.description });
+      const [err1] = await updateEvent({ token: this.token, description: this.description, eventDate: this.eventDate });
       if (err1) return alertError(err1);
 
       const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });

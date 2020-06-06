@@ -4,6 +4,7 @@ import {
   FieldMask,
   CreateEventRequest,
   CreateGameRequest,
+  Date,
   DeleteGameRequest,
   DeleteTipRequest,
   Event,
@@ -25,63 +26,63 @@ export class EventsClient {
 
   getEvent(
     request: GetEventRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Event) => void
   ): grpcWeb.ClientReadableStream<Event>;
 
   createEvent(
     request: CreateEventRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Event) => void
   ): grpcWeb.ClientReadableStream<Event>;
 
   updateEvent(
     request: UpdateEventRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Event) => void
   ): grpcWeb.ClientReadableStream<Event>;
 
   updateParticipants(
     request: UpdateParticipantsRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Empty) => void
   ): grpcWeb.ClientReadableStream<Empty>;
 
   createGame(
     request: CreateGameRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Game) => void
   ): grpcWeb.ClientReadableStream<Game>;
 
   updateGame(
     request: UpdateGameRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Game) => void
   ): grpcWeb.ClientReadableStream<Game>;
 
   deleteGame(
     request: DeleteGameRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Empty) => void
   ): grpcWeb.ClientReadableStream<Empty>;
 
   postTip(
     request: PostTipRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Tip) => void
   ): grpcWeb.ClientReadableStream<Tip>;
 
   deleteTip(
     request: DeleteTipRequest,
-    metadata: grpcWeb.Metadata | undefined,
+    metadata: grpcWeb.Metadata,
     callback: (err: grpcWeb.Error,
                response: Empty) => void
   ): grpcWeb.ClientReadableStream<Empty>;
@@ -95,47 +96,47 @@ export class EventsPromiseClient {
 
   getEvent(
     request: GetEventRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Event>;
 
   createEvent(
     request: CreateEventRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Event>;
 
   updateEvent(
     request: UpdateEventRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Event>;
 
   updateParticipants(
     request: UpdateParticipantsRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Empty>;
 
   createGame(
     request: CreateGameRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Game>;
 
   updateGame(
     request: UpdateGameRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Game>;
 
   deleteGame(
     request: DeleteGameRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Empty>;
 
   postTip(
     request: PostTipRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Tip>;
 
   deleteTip(
     request: DeleteTipRequest,
-    metadata?: grpcWeb.Metadata
+    metadata: grpcWeb.Metadata
   ): Promise<Empty>;
 
 }
