@@ -3,7 +3,7 @@
     <header class="header">
       <div class="header-inner">
         <h1>イベント情報変更</h1>
-        <nuxt-link :to="`/events/${token}/info`" class="tm-iconLink back">
+        <nuxt-link :to="`/events/${token}/table`" class="tm-iconLink back">
           <i class="fas fa-angle-left"></i>
         </nuxt-link>
       </div>
@@ -71,7 +71,7 @@ export default Vue.extend({
       const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });
       if (err2) return alertError(err2);
 
-      this.$router.push(`/events/${this.token}/info`);
+      this.$router.push(`/events/${this.token}/table`);
     }
   }
 });

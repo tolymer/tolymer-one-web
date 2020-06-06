@@ -9,10 +9,11 @@
           </span>
           <ul v-if="showMenu">
             <li>
-              <nuxt-link :to="`/events/${token}/info`"> <i class="fas fa-info-circle"></i> イベント情報 </nuxt-link>
-            </li>
-            <li>
               <nuxt-link to="/"> <i class="fas fa-plus-circle"></i> イベント作成 </nuxt-link>
+              <nuxt-link :to="`/events/${token}/edit`" class="tm-iconLink edit">
+                <i class="fas fa-edit"></i> イベント編集
+              </nuxt-link>
+            </li>
             </li>
           </ul>
         </div>
