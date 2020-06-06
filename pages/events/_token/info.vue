@@ -12,7 +12,6 @@
       </div>
     </header>
     <div class="body">
-      <div class="description">{{ description }}</div>
       <h2>参加者</h2>
       <ul class="participant">
         <li v-for="(partipant, i) in participants" :key="i">{{ partipant.name }}</li>
@@ -36,7 +35,6 @@ export default {
 
     return {
       token: event.token,
-      description: event.description,
       participants: event.participantsList
     };
   }
@@ -94,11 +92,6 @@ export default {
   margin-right: auto;
   padding: 16px;
   max-width: 640px;
-}
-
-.description {
-  margin-bottom: 16px;
-  white-space: pre-wrap;
 }
 
 .participant {

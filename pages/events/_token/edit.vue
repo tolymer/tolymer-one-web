@@ -20,18 +20,6 @@
         <div class="Form-item" style="margin-top: 30px">
           <tm-input v-model="eventDate" type="date" label="開催日" />
         </div>
-        <div class="Form-item" style="margin-top: 25px">
-          <tm-input
-            v-model="description"
-            type="textarea"
-            :rows="5"
-            :cols="40"
-            label="概要"
-            placeholder="例）
-  場所: 渋谷 Zoo
-  日程: 2018/12/10"
-          />
-        </div>
         <div class="Form-action">
           <tm-button @click="submit()" class="Form-button" kind="primary">変更</tm-button>
         </div>
@@ -57,7 +45,6 @@ export default Vue.extend({
     return {
       token: '',
       eventDate: '',
-      description: '',
       participants: []
     };
   },
@@ -73,13 +60,12 @@ export default Vue.extend({
     return {
       token: event.token,
       eventDate: protoToDate(event.eventDate).format('YYYY-MM-DD'),
-      description: event.description,
       participants: event.participantsList
     };
   },
   methods: {
     async submit(): Promise<void> {
-      const [err1] = await updateEvent({ token: this.token, description: this.description, eventDate: this.eventDate });
+      const [err1] = await updateEvent({ token: this.token, eventDate: this.eventDate });
       if (err1) return alertError(err1);
 
       const [err2] = await updateParticipants({ token: this.token, renamingParticipants: this.participants });
