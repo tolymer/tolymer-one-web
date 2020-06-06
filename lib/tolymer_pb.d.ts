@@ -21,7 +21,7 @@ export class FieldMask {
 
 export namespace FieldMask {
   export type AsObject = {
-    pathsList: string[];
+    PathsList: string[];
   }
 }
 
@@ -31,6 +31,8 @@ export class CreateEventRequest {
   setDescription(a: string): void;
   getParticipantsList(): string[];
   setParticipantsList(a: string[]): void;
+  getEventDate(): Date;
+  setEventDate(a: Date): void;
   toObject(): CreateEventRequest.AsObject;
   serializeBinary(): Uint8Array;
   static deserializeBinary: (bytes: {}) => CreateEventRequest;
@@ -38,8 +40,9 @@ export class CreateEventRequest {
 
 export namespace CreateEventRequest {
   export type AsObject = {
-    description: string;
-    participantsList: string[];
+    Description: string;
+    ParticipantsList: string[];
+    EventDate: Date;
   }
 }
 
@@ -56,8 +59,29 @@ export class CreateGameRequest {
 
 export namespace CreateGameRequest {
   export type AsObject = {
-    eventToken: string;
-    resultsList: GameResult[];
+    EventToken: string;
+    ResultsList: GameResult[];
+  }
+}
+
+export class Date {
+  constructor ();
+  getYear(): number;
+  setYear(a: number): void;
+  getMonth(): number;
+  setMonth(a: number): void;
+  getDay(): number;
+  setDay(a: number): void;
+  toObject(): Date.AsObject;
+  serializeBinary(): Uint8Array;
+  static deserializeBinary: (bytes: {}) => Date;
+}
+
+export namespace Date {
+  export type AsObject = {
+    Year: number;
+    Month: number;
+    Day: number;
   }
 }
 
@@ -74,8 +98,8 @@ export class DeleteGameRequest {
 
 export namespace DeleteGameRequest {
   export type AsObject = {
-    eventToken: string;
-    gameId: number;
+    EventToken: string;
+    GameId: number;
   }
 }
 
@@ -90,7 +114,7 @@ export class DeleteTipRequest {
 
 export namespace DeleteTipRequest {
   export type AsObject = {
-    eventToken: string;
+    EventToken: string;
   }
 }
 
@@ -106,6 +130,8 @@ export class Event {
   setGamesList(a: Game[]): void;
   getTip(): Tip;
   setTip(a: Tip): void;
+  getEventDate(): Date;
+  setEventDate(a: Date): void;
   toObject(): Event.AsObject;
   serializeBinary(): Uint8Array;
   static deserializeBinary: (bytes: {}) => Event;
@@ -113,11 +139,12 @@ export class Event {
 
 export namespace Event {
   export type AsObject = {
-    token: string;
-    description: string;
-    participantsList: Participant[];
-    gamesList: Game[];
-    tip: Tip;
+    Token: string;
+    Description: string;
+    ParticipantsList: Participant[];
+    GamesList: Game[];
+    Tip: Tip;
+    EventDate: Date;
   }
 }
 
@@ -134,8 +161,8 @@ export class Game {
 
 export namespace Game {
   export type AsObject = {
-    id: number;
-    resultsList: GameResult[];
+    Id: number;
+    ResultsList: GameResult[];
   }
 }
 
@@ -154,9 +181,9 @@ export class GameResult {
 
 export namespace GameResult {
   export type AsObject = {
-    participantId: number;
-    rank: number;
-    score: number;
+    ParticipantId: number;
+    Rank: number;
+    Score: number;
   }
 }
 
@@ -171,7 +198,7 @@ export class GetEventRequest {
 
 export namespace GetEventRequest {
   export type AsObject = {
-    eventToken: string;
+    EventToken: string;
   }
 }
 
@@ -188,8 +215,8 @@ export class Participant {
 
 export namespace Participant {
   export type AsObject = {
-    id: number;
-    name: string;
+    Id: number;
+    Name: string;
   }
 }
 
@@ -206,8 +233,8 @@ export class PostTipRequest {
 
 export namespace PostTipRequest {
   export type AsObject = {
-    eventToken: string;
-    resultsList: TipResult[];
+    EventToken: string;
+    ResultsList: TipResult[];
   }
 }
 
@@ -222,7 +249,7 @@ export class Tip {
 
 export namespace Tip {
   export type AsObject = {
-    resultsList: TipResult[];
+    ResultsList: TipResult[];
   }
 }
 
@@ -239,8 +266,8 @@ export class TipResult {
 
 export namespace TipResult {
   export type AsObject = {
-    participantId: number;
-    score: number;
+    ParticipantId: number;
+    Score: number;
   }
 }
 
@@ -252,6 +279,8 @@ export class UpdateEventRequest {
   setDescription(a: string): void;
   getUpdateMask(): FieldMask;
   setUpdateMask(a: FieldMask): void;
+  getEventDate(): Date;
+  setEventDate(a: Date): void;
   toObject(): UpdateEventRequest.AsObject;
   serializeBinary(): Uint8Array;
   static deserializeBinary: (bytes: {}) => UpdateEventRequest;
@@ -259,9 +288,10 @@ export class UpdateEventRequest {
 
 export namespace UpdateEventRequest {
   export type AsObject = {
-    eventToken: string;
-    description: string;
-    updateMask: FieldMask;
+    EventToken: string;
+    Description: string;
+    UpdateMask: FieldMask;
+    EventDate: Date;
   }
 }
 
@@ -282,10 +312,10 @@ export class UpdateGameRequest {
 
 export namespace UpdateGameRequest {
   export type AsObject = {
-    eventToken: string;
-    gameId: number;
-    resultsList: GameResult[];
-    updateMask: FieldMask;
+    EventToken: string;
+    GameId: number;
+    ResultsList: GameResult[];
+    UpdateMask: FieldMask;
   }
 }
 
@@ -306,10 +336,10 @@ export class UpdateParticipantsRequest {
 
 export namespace UpdateParticipantsRequest {
   export type AsObject = {
-    eventToken: string;
-    renamingParticipantsList: Participant[];
-    addingNamesList: string[];
-    deletingIdsList: number[];
+    EventToken: string;
+    RenamingParticipantsList: Participant[];
+    AddingNamesList: string[];
+    DeletingIdsList: number[];
   }
 }
 

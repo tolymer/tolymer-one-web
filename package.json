@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "big.js": "^5.2.2",
+    "dayjs": "^1.8.28",
     "google-protobuf": "^3.6.1",
     "grpc-web": "^1.0.3",
     "normalize.css": "^8.0.1",

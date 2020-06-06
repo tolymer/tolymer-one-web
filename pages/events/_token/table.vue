@@ -2,7 +2,7 @@
   <main>
     <header class="header">
       <div class="header-inner">
-        <h1>スコア表</h1>
+        <h1>{{ eventDate.format('YYYY/M/D') || 'スコア表' }}</h1>
         <div class="dropdown">
           <span class="menuBtn" @click.stop="showMenu = !showMenu">
             <i class="fas fa-bars"></i>
@@ -71,6 +71,7 @@ import Big from 'big.js';
 import tmLink from '~/components/tm-link.vue';
 import * as client from '~/lib/TolymerGrpcClient';
 import { alertError } from '~/lib/errorHandler';
+import { protoToDate } from '../../../lib/ProtobufType';
 
 export default Vue.extend({
   components: {
@@ -85,6 +86,7 @@ export default Vue.extend({
   data() {
     return {
       token: null,
+      eventDate: '',
       participants: [],
       games: [],
       tip: null,
@@ -102,6 +104,7 @@ export default Vue.extend({
 
     return {
       token: event.token,
+      eventDate: protoToDate(event.eventDate),
       participants: event.participantsList,
       games: event.gamesList,
       tip: event.tip

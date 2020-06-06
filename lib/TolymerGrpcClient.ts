@@ -15,6 +15,7 @@ import { FieldMask } from 'google-protobuf/google/protobuf/field_mask_pb';
 import grpc from 'grpc-web';
 import { EventsClient } from './tolymer_grpc_web_pb.js';
 import config from '~/nuxt.config';
+import { dateToProto } from './ProtobufType';
 
 const host = config.dev ? 'http://localhost:8080' : 'https://tolymer-grpc.hokaccha.dev';
 const client = new EventsClient(host, null, null);
@@ -59,6 +60,7 @@ export function createEvent(params): Promise<any> {
   return new Promise(resolve => {
     const request = new CreateEventRequest();
     request.setDescription(params.description);
+    request.setEventDate(dateToProto(params.eventDate));
     request.setParticipantsList(params.participants);
 
     client.createEvent(request, {}, (err, res) => {
@@ -73,10 +75,10 @@ export function updateEvent(params): Promise<any> {
   return new Promise(resolve => {
     const request = new UpdateEventRequest();
     request.setEventToken(params.token);
+    request.setEventDate(dateToProto(params.eventDate));
     request.setDescription(params.description);
     const updateMask = new FieldMask();
-    const paths = Object.keys(params).filter(key => key !== 'token');
-    updateMask.setPathsList(paths);
+    updateMask.setPathsList(['description', 'event_date']);
     request.setUpdateMask(updateMask);
 
     client.updateEvent(request, {}, err => {

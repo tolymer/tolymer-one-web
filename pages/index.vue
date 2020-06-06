@@ -28,6 +28,9 @@
         </li>
       </ul>
       <div class="Form-item" style="margin-top: 30px">
+        <tm-input v-model="eventDate" type="date" label="開催日" />
+      </div>
+      <div class="Form-item" style="margin-top: 30px">
         <tm-input
           v-model="description"
           type="textarea"
@@ -61,6 +64,7 @@ export default Vue.extend({
   data() {
     return {
       description: '',
+      eventDate: new Date().toISOString().slice(0, 10),
       participants: [] as string[],
       previousParticipants: [] as string[]
     };
@@ -101,6 +105,7 @@ export default Vue.extend({
     async submit() {
       const [err, event] = await createEvent({
         description: this.description,
+        eventDate: this.eventDate,
         participants: this.participants
       });
 
