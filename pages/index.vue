@@ -6,7 +6,7 @@
       <header class="participants__header">
         <h3>参加者（必須）</h3>
         <tm-button
-          v-if="this.previousParticipants.length"
+          v-if="previousParticipants.length !== 0"
           @click="setPreviousParticipants()"
           class="participants__headerButton"
           kind="modest"
