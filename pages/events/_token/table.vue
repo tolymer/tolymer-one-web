@@ -14,7 +14,6 @@
                 <i class="fas fa-edit"></i> イベント編集
               </nuxt-link>
             </li>
-            </li>
           </ul>
         </div>
       </div>
@@ -94,6 +93,18 @@ export default Vue.extend({
       showMenu: false
     };
   },
+  head() {
+    return {
+      title: `${this.eventDate.format('YYYY/M/D')}の対局 | Tolymer One`,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: `${this.eventDate.format('YYYY/M/D')}開催、面子は ${this.listParticipants(this.participants)}`
+        }
+      ]
+    };
+  },
   async asyncData({ params, error }) {
     const token = params.token;
     const [err, event] = await client.getEvent(token);
@@ -152,6 +163,9 @@ export default Vue.extend({
       } else {
         return 'zero';
       }
+    },
+    listParticipants(participants) {
+      return participants.map(p => p.name);
     }
   }
 });
