@@ -51,9 +51,25 @@
         </tbody>
         <tfoot v-if="games.length > 0 || tip">
           <tr class="totalRow">
-            <th class="gameNumberCol"></th>
+            <th class="gameNumberCol">
+              <button
+                class="gameFinalResultBtn"
+                type="button"
+                v-on:click="
+                  {
+                    multiplyRate();
+                  }
+                "
+              ></button>
+            </th>
             <td v-for="(totalResult, i) in calcTotalResults()" :key="i" :class="getScoreColClass(totalResult)">
               {{ totalResult }}
+            </td>
+          </tr>
+          <tr v-if="showFinalResult" class="totalRow">
+            <th class="gameNumberCol"></th>
+            <td v-for="(multiplyResult, i) in multiplyResults()" :key="i" :class="getScoreColClass(multiplyResult)">
+              {{ multiplyResult }}
             </td>
           </tr>
         </tfoot>
@@ -90,6 +106,8 @@ export default Vue.extend({
       participants: [],
       games: [],
       tip: null,
+      rate: 0,
+      showFinalResult: false,
       showMenu: false
     };
   },
@@ -166,6 +184,16 @@ export default Vue.extend({
     },
     listParticipants(participants) {
       return participants.map(p => p.name);
+    },
+    multiplyRate() {
+      const value = prompt('?', 50);
+      this.showFinalResult = true;
+      this.rate = value;
+    },
+    multiplyResults() {
+      const scores = this.calcTotalResults();
+
+      return scores.map(s => s * this.rate);
     }
   }
 });
@@ -302,5 +330,12 @@ export default Vue.extend({
 
 .resultTable .tipRow .gameNumberCol a {
   background-color: #e67b3a;
+}
+
+.gameFinalResultBtn {
+  display: block;
+  width: 100%;
+  height: 1em;
+  -webkit-tap-highlight-color: none;
 }
 </style>
