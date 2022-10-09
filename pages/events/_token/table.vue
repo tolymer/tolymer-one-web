@@ -186,9 +186,16 @@ export default Vue.extend({
       return participants.map(p => p.name);
     },
     multiplyRate() {
-      const value = prompt('?', 50);
-      this.showFinalResult = true;
-      this.rate = value;
+      const value = Number(prompt('?', 50));
+      const isInteger = Number.isInteger(value);
+
+      if (value !== 0 && Number.isInteger(value)) {
+        this.rate = value;
+        this.showFinalResult = true;
+      } else {
+        alert('Please enter an integer greater than 0.');
+        return false;
+      }
     },
     multiplyResults() {
       const scores = this.calcTotalResults();
